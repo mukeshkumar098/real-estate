@@ -125,25 +125,33 @@ const UserProfile = () => {
   };
 
   if (!user) {
-    return <div className="text-center p-8">Loading user data...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <div className="animate-spin w-8 h-8 mb-4 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-gray-700">Loading user data...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">
           Welcome, {user.name}
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-md group">
+        {/* Profile header section */}
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shadow-md group">
               {formData.profilePicture ? (
                 <img
                   src={formData.profilePicture}
@@ -151,7 +159,7 @@ const UserProfile = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-700 font-semibold text-sm text-center p-2">
+                <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-700 font-semibold text-xs sm:text-sm text-center p-2">
                   No Image<br />Click to Add
                 </div>
               )}
@@ -172,16 +180,16 @@ const UserProfile = () => {
               )}
             </div>
 
-            <div className="text-lg font-semibold text-gray-700">
-              <p>{user.name}</p>
-              <p className="text-gray-500">{user.email}</p>
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-semibold text-gray-700">{user.name}</p>
+              <p className="text-sm text-gray-500 break-all">{user.email}</p>
             </div>
           </div>
 
           {!editMode && (
             <button
               onClick={handleEdit}
-              className="flex items-center text-sm text-blue-600 hover:underline transition-all"
+              className="flex items-center justify-center text-sm text-blue-600 hover:text-blue-700 hover:underline transition-all bg-blue-50 px-4 py-2 rounded-full sm:bg-transparent sm:px-0 sm:py-0"
               aria-label="Edit Profile"
             >
               <FaEdit className="mr-1" />
@@ -190,59 +198,62 @@ const UserProfile = () => {
           )}
         </div>
 
+        {/* Edit form */}
         {editMode && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col">
-              <label htmlFor="name" className="text-sm font-medium text-gray-700">Name</label>
+              <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">Name</label>
               <input
                 id="name"
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="p-2 sm:p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+              <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 id="email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="p-2 sm:p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="profilePicture" className="text-sm font-medium text-gray-700">
+              <label htmlFor="profilePictureInput" className="text-sm font-medium text-gray-700 mb-1">
                 Profile Picture
               </label>
-              <input
-                id="profilePictureInput"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                <input
+                  id="profilePictureInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="p-2 sm:p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-all"
+                className="px-6 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-all order-2 sm:order-1 w-full sm:w-auto"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center"
+                className="px-6 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center order-1 sm:order-2 w-full sm:w-auto"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -259,6 +270,30 @@ const UserProfile = () => {
               </button>
             </div>
           </form>
+        )}
+
+        {/* Additional User Information Section (Optional - can be expanded) */}
+        {!editMode && (
+          <div className="mt-8 border-t pt-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Account Information</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-500">Name</p>
+                <p className="text-base text-gray-900">{user.name || 'Not set'}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-500">Email</p>
+                <p className="text-base text-gray-900 break-all">{user.email || 'Not set'}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg sm:col-span-2">
+                <p className="text-sm font-medium text-gray-500">Account Status</p>
+                <p className="text-base text-green-600 flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                  Active
+                </p>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

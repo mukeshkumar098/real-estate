@@ -24,7 +24,7 @@ const Navbar = () => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       if (window.innerWidth >= 768) {
-        setVisible(true);
+        setVisible(false); // Hide sidebar on desktop
       }
     };
     
@@ -291,13 +291,13 @@ const Navbar = () => {
         ></div>
       )}
 
-      {/* Mobile/Responsive Sidebar */}
+      {/* Mobile Sidebar - Now hidden on desktop */}
       <div
         ref={mobileMenuRef}
         className={`fixed top-0 right-0 h-full bg-white shadow-xl z-50 transition-all duration-300 ease-in-out
           ${visible ? "translate-x-0" : "translate-x-full"}
           w-4/5 max-w-xs 
-          md:translate-x-0 md:w-64 md:max-w-md md:sticky md:top-20 md:right-0 md:float-right md:border-l md:border-gray-200 md:shadow-lg`}
+          md:hidden`} // Changed this line to hide on desktop
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b">
@@ -306,7 +306,7 @@ const Navbar = () => {
               <h4 className="text-lg font-semibold text-yellow-500">LUXORA</h4>
             </div>
             <button
-              className="p-2 rounded-full hover:bg-yellow-50 transition-all duration-300 md:hidden"
+              className="p-2 rounded-full hover:bg-yellow-50 transition-all duration-300"
               onClick={() => setVisible(false)}
               aria-label="Close menu"
             >
@@ -326,7 +326,7 @@ const Navbar = () => {
                     : "text-gray-700 hover:bg-gray-50 hover:text-yellow-500"} 
                   transition-all duration-300`
                 }
-                onClick={() => windowWidth < 768 && setVisible(false)}
+                onClick={() => setVisible(false)}
               >
                 <span className="text-lg">{item.icon}</span>
                 <span>{item.name}</span>
