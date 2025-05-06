@@ -8,6 +8,7 @@ import PostSellerProperty from '../PostProperty/PostProperty.jsx'
 import Carousel from '../Carousel/Carousel.jsx'
 import PropertyCarousel from '../../page/recentProduct.jsx'
 import AgentCarousel from '../../Seller/allAgent.jsx'
+import SearchComponent from '../SeachHouse/SearchHouse'
 
 const Home = () => {
 
@@ -21,8 +22,9 @@ const Home = () => {
 
   return (
     <>
-      <Header/>
-      <SearchHouse/>
+    
+
+      <SearchComponent/>
       <div>
         <div className="m-5 mb-20 flex justify-center items-center">
           <Carousel images={imageArray} />
