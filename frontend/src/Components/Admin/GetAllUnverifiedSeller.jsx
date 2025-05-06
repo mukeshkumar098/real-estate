@@ -3,7 +3,6 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminNavBar from './Header';
-import { BACK_END_URL } from '../constant';
 
 export default function AdminUnVerifySeller() {
   const [sellers, setSellers] = useState([]);
@@ -17,7 +16,7 @@ export default function AdminUnVerifySeller() {
   const fetchSellers = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(`${BACK_END_URL}/user/getUnverifiedSellers`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getUnverifiedSellers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSellers(response.data);
@@ -31,7 +30,7 @@ export default function AdminUnVerifySeller() {
   const handleVerifySeller = async (sellerId) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.put(`${BACK_END_URL}/user/admin-verify-seller/${sellerId}`, 
+      const response = await axios.put(`${import.meta.env.VITE_BACK_END_URL}/user/admin-verify-seller/${sellerId}`, 
         {}, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -1,7 +1,6 @@
 // src/pages/ForgotPassword.jsx
 import { useState } from "react";
 import axios from "axios";
-import { BACK_END_URL } from "../constant";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -10,7 +9,7 @@ export default function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BACK_END_URL}/user/forgot-passward`, { email });
+      const res = await axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/forgot-passward`, { email });
       setMessage(res.data.message);
     } catch (error) {
       setMessage(error.response?.data?.message || "Something went wrong!");

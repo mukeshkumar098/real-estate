@@ -381,7 +381,7 @@ const RealEstateAgentsListing = () => {
 
         setAgents(mockAgents.filter(agent => agent.isVerified));
         // In your actual implementation, use:
-        // const response = await fetch('http://localhost:8080/user/getverifiedSellers');
+        // const response = await fetch('${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers');
         // const data = await response.json();
         // setAgents(data.filter(agent => agent.isVerified));
       } catch (error) {

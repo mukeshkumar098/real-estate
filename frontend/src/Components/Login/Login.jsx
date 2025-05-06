@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../Redux-Arch/Action";
 
-
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,14 +18,12 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await dispatch(loginUser(login));
-  
-      // Assuming the token is available as res.token or res.payload.token
+
       const token = res?.payload?.token || res?.token;
       if (token) {
         localStorage.setItem("authToken", token);
       }
-  
-      // Redirect user based on their role
+
       const role = res?.payload?.user?.role || res?.user?.role;
       if (role === "admin") {
         navigate("/admin");
@@ -39,13 +36,12 @@ const Login = () => {
       alert("Invalid credentials. Please try again.");
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
       <div className="bg-white shadow-lg rounded-xl overflow-hidden w-full max-w-5xl flex flex-col md:flex-row">
         {/* Left - Image */}
-        <div className="md:w-1/2 bg-[#D8232A] flex items-center justify-center p-6">
+        <div className="md:w-1/2 bg-yellow-600 flex items-center justify-center p-6">
           <img
             src="./Images/internship-portal.webp"
             alt="Internship Portal"
@@ -55,7 +51,7 @@ const Login = () => {
 
         {/* Right - Form */}
         <div className="md:w-1/2 w-full p-8 flex flex-col justify-center">
-          <h2 className="text-3xl font-semibold text-center text-[#D8232A] mb-6">Welcome Back</h2>
+          <h2 className="text-3xl font-semibold text-center text-yellow-600 mb-6">Welcome Back</h2>
 
           {/* Social Logins */}
           <div className="space-y-4 mb-4">
@@ -84,7 +80,7 @@ const Login = () => {
               value={login.email}
               onChange={handleChange}
               placeholder="Email Address"
-              className="w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             />
             <input
@@ -93,12 +89,12 @@ const Login = () => {
               value={login.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-4 py-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             />
             <button
               type="submit"
-              className="w-full py-3 bg-[#D8232A] text-white font-semibold rounded-lg hover:bg-red-600 transition"
+              className="w-full py-3 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition"
             >
               Log In
             </button>

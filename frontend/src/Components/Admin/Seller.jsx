@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import AdminNavBar from './Header';
-import { BACK_END_URL } from '../constant';
+
 
 export default function VerifiedSellers() {
   const [sellers, setSellers] = useState([]);
@@ -10,7 +10,7 @@ export default function VerifiedSellers() {
 
   const fetchVerifiedSellers = async () => {
     try {
-      const response = await axios.get(`${BACK_END_URL}/user/getverifiedSellers`);
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
       setSellers(response.data);
     } catch (err) {
       setError(err.message);

@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../Redux-Arch/Action";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
-  const navigate = useNavigate(); // Hook to handle page navigation
-  const dispatch = useDispatch(); // To dispatch the registration action
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [register, setRegister] = useState({
     name: "",
@@ -19,27 +21,34 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload on form submit
+    e.preventDefault();
     try {
-      // Dispatch action to register user
       const res = await dispatch(registerUser(register));
-      
-      if (res && res.success) {
-        navigate("/login"); // Redirecting to login page
+      if (res) {
+        toast.success("Registration successful!", {
+          className: "bg-yellow-500 text-white"
+        });
+        navigate("/login");
       } else {
-        alert("Registration failed. Try again.");
+        toast.error(res?.payload?.message || "Registration failed. Try again.", {
+          className: "bg-yellow-500 text-white"
+        });
       }
     } catch (err) {
       console.error("Registration error:", err);
-      alert("Something went wrong.");
+      toast.error("Something went wrong.", {
+        className: "bg-yellow-500 text-white"
+      });
     }
   };
 
   return (
+
     <div className="flex justify-center items-center min-h-screen">
+       <ToastContainer position="top-right" autoClose={3000} />
       <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl w-full">
         {/* Left Side - Image */}
-        <div className="lg:w-1/2 bg-[#D8232A] flex justify-center items-center p-6">
+        <div className="lg:w-1/2 bg-yellow-600 flex justify-center items-center p-6">
           <img
             src="./Images/internship-portal.webp"
             alt="Internship Portal"
@@ -49,8 +58,8 @@ const Register = () => {
 
         {/* Right Side - Form */}
         <div className="lg:w-1/2 w-full p-8">
-          <h1 className="text-3xl font-bold text-center text-[#D8232A] mb-6">Sign Up</h1>
-          
+          <h1 className="text-3xl font-bold text-center text-yellow-500 mb-6">Sign Up</h1>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
@@ -58,7 +67,7 @@ const Register = () => {
               value={register.name}
               onChange={handleChange}
               placeholder="Full Name"
-              className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             />
             <input
@@ -67,7 +76,7 @@ const Register = () => {
               value={register.email}
               onChange={handleChange}
               placeholder="Email Id"
-              className="w-full px-5 py-3  border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             />
             <input
@@ -76,14 +85,14 @@ const Register = () => {
               value={register.password}
               onChange={handleChange}
               placeholder="Enter Your Password"
-              className="w-full px-5 py-3  border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             />
             <select
               name="role"
               value={register.role}
               onChange={handleChange}
-              className="w-full px-5 py-3  border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8232A]"
+              className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600"
               required
             >
               <option value="buyer">Buyer</option>
@@ -92,7 +101,7 @@ const Register = () => {
 
             <button
               type="submit"
-              className="w-full px-5 py-3  bg-[#D8232A] text-white rounded-lg hover:bg-red-600 transition"
+              className="w-full px-5 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
             >
               Sign Up
             </button>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as types from "./ActionType";
-import { BACK_END_URL } from "../constant";
+
 
 // User Registration Actions
 const getRequest = () => ({ type: types.GETREQUEST });
@@ -11,7 +11,7 @@ export const registerUser = (payload) => {
   return (dispatch) => {
     dispatch(getRequest());
 
-    return axios.post(`${BACK_END_URL}/user/register`, payload, {
+    return axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/register`, payload, {
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => {
@@ -37,7 +37,7 @@ export const fetchProperties = () => {
     dispatch(getPropertiesRequest());
 
     return axios
-      .get(`${BACK_END_URL}/properties/getProperties `)
+      .get(`${import.meta.env.VITE_BACK_END_URL}/properties/getProperties `)
       .then((res) => {
         console.log(res.data, "Fetched properties successfully");
         dispatch(getPropertiesSuccess(res.data));
@@ -93,7 +93,7 @@ export const postProperty = (payload) => {
       }
   
       return axios
-        .get(`${BACK_END_URL}/properties/searchProperties`, { 
+        .get(`${import.meta.env.VITE_BACK_END_URL}/properties/searchProperties`, { 
           params: {
             location: searchParams.location || '',
             property_type: searchParams.property_type || '',
@@ -119,7 +119,7 @@ export const postProperty = (payload) => {
       dispatch({ type: types.GET_PROPERTY_BY_ID_REQUEST });
   
       return axios
-        .get(`${BACK_END_URL}/properties/getPropertyById/${id}`)
+        .get(`${import.meta.env.VITE_BACK_END_URL}/properties/getPropertyById/${id}`)
         .then((res) => {
           dispatch({ type: types.GET_PROPERTY_BY_ID_SUCCESS, payload: res.data });
           return res.data;
@@ -141,7 +141,7 @@ export const postProperty = (payload) => {
     return (dispatch) => {
       dispatch(loginRequest());
   
-      return axios.post(`${BACK_END_URL}/user/login`, payload, {
+      return axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/login`, payload, {
           headers: { "Content-Type": "application/json" },
         })
         .then((res) => {

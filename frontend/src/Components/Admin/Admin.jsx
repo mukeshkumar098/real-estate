@@ -3,7 +3,6 @@ import { Home, Users, Settings, Building, Menu, X, Bell } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AdminNavBar from './Header';
-import { BACK_END_URL } from '../constant';
 
 
 
@@ -16,7 +15,7 @@ export default function RealEstateAdminDashboard() {
 
   const fetchUnverifiedSellersCount = async () => {
     try {
-      const response = await axios.get(`${BACK_END_URL}/user/getUnverifiedSellers`);
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getUnverifiedSellers`);
       setUnverifiedCount(response.data.length);
     } catch (error) {
       console.error('Failed to fetch unverified sellers count:', error);
@@ -25,7 +24,7 @@ export default function RealEstateAdminDashboard() {
 
   const fetchVerifiedSellersCount = async () => {
     try {
-      const response = await axios.get(`${BACK_END_URL}/user/getverifiedSellers`);
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
       setVerifiedCount(response.data.length);
     } catch (error) {
       console.error('Failed to fetch verified sellers count:', error);
@@ -33,7 +32,7 @@ export default function RealEstateAdminDashboard() {
   };
   const allProperties = async () => {
     try {
-      const response = await axios.get(`${BACK_END_URL}/properties/getProperties`);
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/properties/getProperties`);
       setAllPropertiesCount(response.data.length);
     } catch (error) {
       console.error('Failed to fetch verified sellers count:', error);

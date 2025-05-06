@@ -16,7 +16,7 @@ export default function AgentCarousel() {
     const fetchAgents = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8080/user/getverifiedSellers');
+        const response = await fetch(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch agents');
@@ -128,10 +128,10 @@ export default function AgentCarousel() {
     <div className="w-full bg-gradient-to-br from-blue-50 to-gray-50 rounded-xl p-8 shadow-md">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left Side Image Section */}
-        <div className="w-full md:w-1/3 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 flex flex-col justify-center">
           <div className="bg-white rounded-xl overflow-hidden shadow-lg h-96 relative">
             <img 
-              src="/agent-team.jpg" 
+              src="/agents.jpg" 
               alt="Our Professional Team"
               className="w-full h-full object-cover"
               onError={(e) => {

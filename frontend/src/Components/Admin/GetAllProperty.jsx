@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import AdminNavBar from './Header';
-import { BACK_END_URL } from '../constant';
 
 export default function GetAllProperties() {
   const [properties, setProperties] = useState([]);
@@ -10,7 +9,7 @@ export default function GetAllProperties() {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get(`${BACK_END_URL}/properties/getProperties`);
+      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/properties/getProperties`);
       setProperties(response.data);
     } catch (err) {
       setError(err.message);

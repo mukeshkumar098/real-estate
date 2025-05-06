@@ -17,7 +17,7 @@ export default function ResetPassword() {
     }
 
     try {
-      const res = await axios.patch(`http://localhost:8080/user/reset-password/${token}`, {
+      const res = await axios.patch(`${import.meta.env.VITE_BACK_END_URL}/user/reset-password/${token}`, {
         password,
         email: "mukesh567kemar@gmail.com" // Replace with the actual email
       });

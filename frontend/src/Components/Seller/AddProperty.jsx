@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { BACK_END_URL } from '../constant';
+
 
 const AddProperty = () => {
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ const AddProperty = () => {
         }
       }
 
-      const response = await axios.post(`${BACK_END_URL}/properties/add-properties`, formDataToSend, {
+      const response = await axios.post(`${import.meta.env.VITE_BACK_END_URL}/properties/add-properties`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

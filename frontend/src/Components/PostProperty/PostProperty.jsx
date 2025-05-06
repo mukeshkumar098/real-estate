@@ -150,7 +150,7 @@ const SellerPropertyForm = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/properties/add-properties", {
+      const res = await fetch(`${import.meta.env.VITE_BACK_END_URL}/properties/add-properties`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,

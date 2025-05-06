@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { FaEdit, FaUpload } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { BACK_END_URL } from "../Components/constant";
 
 const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -82,7 +81,7 @@ const UserProfile = () => {
         return;
       }
 
-      const response = await axios.put(`${BACK_END_URL}/user/update`,
+      const response = await axios.put(`${import.meta.env.VITE_BACK_END_URL}/user/update`,
         formDataToSend,
         {
           headers: {
