@@ -21,6 +21,9 @@ const UserProfile = lazy(() => import("./userProfile/userProfile"));
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { FaSpinner } from "react-icons/fa";
 import SellerPropertyForm from "./Components/PostProperty/PostProperty";
+import AllProperties from "./page/allProperty";
+import ContactPage from "./page/contect-Us/contact";
+import AboutPage from "./page/about-Us/about";
 function App() {
   return (
     <BrowserRouter>
@@ -37,6 +40,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<><Navbar /><UserProfile /><Footer /></>} />
+           <Route path="/all-properties" element={<><Navbar /><AllProperties /><Footer /></>} />
+           <Route path="/contact" element={<><Navbar /><ContactPage/><Footer /></>} />
+            <Route path="/about" element={<><Navbar /><AboutPage/><Footer /></>} />
           <Route
             path="/property/:id"
             element={

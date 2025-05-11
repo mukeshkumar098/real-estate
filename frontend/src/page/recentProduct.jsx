@@ -1,234 +1,404 @@
-import { useState, useRef, useEffect } from "react";
-import { FaMapMarkerAlt, FaRupeeSign, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { FaMapMarkerAlt, FaRupeeSign, FaExpand, FaBed, FaBath, FaCalendarAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
-const PropertyCarousel = () => {
-  const navigate = useNavigate();
-  const carouselRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(1);
-  const [direction, setDirection] = useState(1);
-
+const PropertySliderCarousel = () => {
   // Get properties from Redux store
   const { properties, isLoading, isError } = useSelector((state) => state);
+  
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const carouselRef = useRef(null);
+  const autoplayTimerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  // Handle responsive visibility
+  // Handle window resize
   useEffect(() => {
-    const updateVisibleCount = () => {
-      if (window.innerWidth >= 1024) {
-        setVisibleCount(4); // lg screens
-      } else if (window.innerWidth >= 768) {
-        setVisibleCount(3); // md screens
-      } else {
-        setVisibleCount(1); // sm screens
-      }
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
     };
-
-    updateVisibleCount();
-    window.addEventListener('resize', updateVisibleCount);
-    return () => window.removeEventListener('resize', updateVisibleCount);
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Filter and sort properties
-  const recentProperties = properties
+  // Filter properties by category and sort by date
+  const filteredProperties = properties
     ? [...properties]
-        .filter(property => property?.createdAt && !isNaN(new Date(property.createdAt).getTime()))
+        .filter(property => {
+          // Only include properties with valid creation date
+          if (!property?.createdAt || isNaN(new Date(property.createdAt).getTime())) {
+            return false;
+          }
+          
+          // Filter by category if not "all"
+          if (selectedCategory !== "all") {
+            return property.type?.toLowerCase() === selectedCategory.toLowerCase();
+          }
+          
+          return true;
+        })
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 10)
     : [];
 
-  const getDaysAgo = (dateString) => {
-    const diffDays = Math.floor((new Date() - new Date(dateString)) / (1000 * 60 * 60 * 24));
-    return diffDays === 0 ? "Today" : diffDays === 1 ? "Yesterday" : `${diffDays} days ago`;
-  };
+  // Get categories for filter buttons
+  const categories = ["all", ...new Set(properties?.map(p => p.type?.toLowerCase()).filter(Boolean) || [])];
 
-  const nextSlide = () => {
-    if (recentProperties.length === 0) return;
-    setDirection(1);
-    setCurrentIndex(prev => 
-      prev >= recentProperties.length - visibleCount ? 0 : prev + 1
-    );
-  };
-
-  const prevSlide = () => {
-    if (recentProperties.length === 0) return;
-    setDirection(-1);
-    setCurrentIndex(prev => 
-      prev === 0 ? recentProperties.length - visibleCount : prev - 1
-    );
-  };
-
+  // Move to specified slide
   const goToSlide = (index) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index * visibleCount);
+    if (isAnimating || index === activeIndex) return;
+    
+    setIsAnimating(true);
+    setActiveIndex(index);
+    
+    // Reset animation state after transition completes
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 500);
   };
 
-  // Touch handlers
-  const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
-  const handleTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) nextSlide();
-    if (touchStart - touchEnd < -75) prevSlide();
+  // Move to next slide
+  const nextSlide = () => {
+    if (filteredProperties.length <= 1) return;
+    const newIndex = activeIndex === filteredProperties.length - 1 ? 0 : activeIndex + 1;
+    goToSlide(newIndex);
   };
 
-  // Get visible properties
-  const visibleProperties = recentProperties.length === 0 ? [] : 
-    Array.from({ length: Math.min(visibleCount, recentProperties.length - currentIndex) })
-      .map((_, i) => recentProperties[currentIndex + i]);
+  // Move to previous slide
+  const prevSlide = () => {
+    if (filteredProperties.length <= 1) return;
+    const newIndex = activeIndex === 0 ? filteredProperties.length - 1 : activeIndex - 1;
+    goToSlide(newIndex);
+  };
 
-  if (isLoading) return <div className="w-full py-8 px-4 md:px-8 bg-gray-50">Loading...</div>;
-  if (isError) return <div className="w-full py-8 px-4 md:px-8 bg-gray-50">Error loading properties</div>;
-  if (recentProperties.length === 0) return <div className="w-full py-8 px-4 md:px-8 bg-gray-50">No properties available</div>;
+  // Set up autoplay
+  useEffect(() => {
+    if (filteredProperties.length <= 1) return;
+    
+    // Start autoplay
+    autoplayTimerRef.current = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    
+    // Clean up on unmount
+    return () => {
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current);
+      }
+    };
+  }, [activeIndex, filteredProperties.length]);
+
+  // Reset carousel when category changes
+  useEffect(() => {
+    setActiveIndex(0);
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current);
+    }
+  }, [selectedCategory]);
+
+  // Pause autoplay on hover
+  const handleMouseEnter = () => {
+    if (autoplayTimerRef.current) {
+      clearInterval(autoplayTimerRef.current);
+    }
+  };
+
+  // Resume autoplay when mouse leaves
+  const handleMouseLeave = () => {
+    if (filteredProperties.length > 1) {
+      autoplayTimerRef.current = setInterval(() => {
+        nextSlide();
+      }, 5000);
+    }
+  };
+
+  // Get relative time
+  const getTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+    return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
+  };
+
+  // Loading and error states
+  if (isLoading) return (
+    <div className="w-full py-8 px-4 md:px-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto animate-pulse">
+        <div className="h-8 w-64 bg-gray-200 rounded mb-6"></div>
+        <div className="h-96 bg-gray-200 rounded-xl"></div>
+      </div>
+    </div>
+  );
+  
+  if (isError) return (
+    <div className="w-full py-8 px-4 md:px-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+        <h3 className="text-red-600 font-medium">Error loading properties</h3>
+        <p className="text-gray-600 mt-2">Please try again later</p>
+      </div>
+    </div>
+  );
+  
+  if (filteredProperties.length === 0) return (
+    <div className="w-full py-12 px-4 md:px-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Featured Properties</h2>
+        <div className="bg-white rounded-xl p-8 shadow-md text-center">
+          <p className="text-gray-600">No properties available in this category.</p>
+          <button 
+            onClick={() => setSelectedCategory("all")}
+            className="mt-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md transition-colors"
+          >
+            View All Properties
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <section className="w-full py-12 px-4 md:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Recently Added Properties</h2>
-          
-          {recentProperties.length > visibleCount && (
-            <div className="flex gap-3">
-              <button 
-                onClick={prevSlide}
-                className="p-3 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors hover:shadow-lg"
-                aria-label="Previous property"
-              >
-                <FaChevronLeft className="text-gray-700 text-lg" />
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="p-3 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors hover:shadow-lg"
-                aria-label="Next property"
-              >
-                <FaChevronRight className="text-gray-700 text-lg" />
-              </button>
-            </div>
-          )}
+        {/* Header with title */}
+        <div className="mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">Featured Properties</h2>
+          <div className="h-0.5 w-24 bg-yellow-500"></div>
         </div>
-
+        
+        {/* Category filter */}
+        <div className="mb-8 overflow-x-auto pb-2">
+          <div className="flex gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => {
+                  setSelectedCategory(category);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === category
+                    ? "bg-yellow-500 text-white shadow-md"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {/* Carousel container */}
         <div 
+          className="relative bg-white rounded-xl shadow-lg overflow-hidden" 
           ref={carouselRef}
-          className="relative w-full overflow-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <AnimatePresence custom={direction} initial={false}>
-            <motion.div
-              key={`${currentIndex}-${visibleCount}`} // Unique key based on index and count
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              className={`grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6`}
-            >
-              {visibleProperties.map((property, i) => (
-                <motion.div
-                  key={property._id}
-                  initial={{ opacity: 0, x: direction * 50 * (i + 1) }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -8, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)" }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 hover:border-yellow-300"
-                >
-                  <div className="relative h-56 w-full">
+          {/* Main slider */}
+          <div className="relative h-96 md:h-[500px] overflow-hidden">
+            {filteredProperties.map((property, index) => (
+              <div
+                key={property._id || property.id}
+                className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                  index === activeIndex 
+                    ? "opacity-100 translate-x-0" 
+                    : index < activeIndex 
+                      ? "opacity-0 -translate-x-full" 
+                      : "opacity-0 translate-x-full"
+                }`}
+              >
+                <div className="h-full flex flex-col md:flex-row">
+                  {/* Image section - Fixed responsive image container */}
+                  <div className="relative w-full md:w-7/12 h-60 md:h-full overflow-hidden bg-gray-100">
                     <img
                       src={property.images?.[0] || "/images/default-property.jpg"}
                       alt={property.title}
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading={index === activeIndex ? "eager" : "lazy"}
                     />
-                    <div className="absolute bottom-3 left-3 bg-yellow-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-                      New
-                    </div>
-                    {property.createdAt && (
-                      <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
-                        {getDaysAgo(property.createdAt)}
-                      </div>
-                    )}
-                    <div className={`absolute top-3 left-3 text-xs font-semibold px-2 py-1 rounded-full ${
-                      property.mapAvailable ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800'
-                    }`}>
-                      {property.mapAvailable ? 'Map Available' : 'Map Not Available'}
-                    </div>
-                  </div>
-                  
-                  <div className="p-5">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-lg text-gray-800 line-clamp-1">
-                        {property.title}
-                      </h3>
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full whitespace-nowrap">
-                        {property.type}
-                      </span>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent md:bg-gradient-to-r md:from-black/30 md:to-transparent"></div>
                     
-                    <div className="flex items-center text-gray-600 mb-4">
-                      <FaMapMarkerAlt className="mr-2 text-yellow-500" />
-                      <span className="text-sm">
-                        {property.location?.address || 'Location not specified'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-3 mb-5">
-                      <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
-                        <span className="font-medium mr-1">{property.bedrooms || 'N/A'}</span> beds
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
-                        <span className="font-medium mr-1">{property.bathrooms || 'N/A'}</span> baths
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
-                        {property.area?.built_up ? (
-                          <span className="font-medium">{property.area.built_up} sqft</span>
-                        ) : property.area?.carpet ? (
-                          <span className="font-medium">{property.area.carpet} sqft</span>
-                        ) : (
-                          <span className="font-medium">N/A</span>
+                    {/* Top left badge */}
+                    <div className="absolute top-4 left-4 z-10">
+                      <div className="flex gap-2">
+                        <span className="bg-yellow-500 text-white text-xs px-2.5 py-1 rounded-md font-medium">
+                          {property.type}
+                        </span>
+                        {property.mapAvailable && (
+                          <span className="bg-green-500/80 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-md">
+                            Map
+                          </span>
                         )}
                       </div>
                     </div>
+
+                    {/* Property title overlay (mobile only) */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden z-10">
+                      <h3 className="font-bold text-xl text-white">
+                        {property.title}
+                      </h3>
+                      <div className="flex items-center mt-1">
+                        <FaMapMarkerAlt className="mr-1.5 text-yellow-400" size={12} />
+                        <span className="text-white/90 text-sm truncate">
+                          {property.location?.address || 'Location not specified'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Content section */}
+                  <div className="relative w-full md:w-5/12 p-6 md:p-8 flex flex-col">
+                    {/* Desktop title */}
+                    <div className="hidden md:block mb-6">
+                      <h3 className="font-bold text-2xl text-gray-800 mb-2">
+                        {property.title}
+                      </h3>
+                      <div className="flex items-center">
+                        <FaMapMarkerAlt className="mr-1.5 text-yellow-500" size={14} />
+                        <span className="text-gray-600">
+                          {property.location?.address || 'Location not specified'}
+                        </span>
+                      </div>
+                      
+                      {/* Date added */}
+                      {property.createdAt && (
+                        <div className="flex items-center mt-2 text-sm text-gray-500">
+                          <FaCalendarAlt className="mr-1.5 text-yellow-500" size={12} />
+                          <span>Added {getTimeAgo(property.createdAt)}</span>
+                        </div>
+                      )}
+                    </div>
                     
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center text-yellow-600 font-bold text-md">
+                    {/* Specifications */}
+                    <div className="grid grid-cols-3 gap-2 mb-6">
+                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaBed className="text-yellow-500 mb-1" size={20} />
+                        <span className="text-xs text-gray-500">Beds</span>
+                        <span className="font-medium text-gray-800">{property.bedrooms || 'N/A'}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaBath className="text-yellow-500 mb-1" size={20} />
+                        <span className="text-xs text-gray-500">Baths</span>
+                        <span className="font-medium text-gray-800">{property.bathrooms || 'N/A'}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaExpand className="text-yellow-500 mb-1" size={20} />
+                        <span className="text-xs text-gray-500">Area</span>
+                        <span className="font-medium text-gray-800">
+                          {property.area?.built_up || property.area?.carpet || 'N/A'}
+                          {(property.area?.built_up || property.area?.carpet) ? <span className="text-xs"> sqft</span> : ''}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Description */}
+                    {property.description && (
+                      <div className="mb-auto">
+                        <h4 className="font-semibold text-gray-800 mb-2">Description</h4>
+                        <p className="text-sm text-gray-600 line-clamp-4 md:line-clamp-6">
+                          {property.description}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Price and action */}
+                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                      <div className="flex items-center text-yellow-600 font-bold text-xl">
                         <FaRupeeSign className="mr-1" />
                         <span>{property.price?.toLocaleString() || 'Price not available'}</span>
                       </div>
+                      
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/property/${property._id || property.id}`);
-                        }}
-                        className="px-3 py-1.5 cursor-pointer bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition-colors shadow-md hover:shadow-lg"
+                        onClick={() => {/* View property details */}}
+                        className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md transition-colors"
                       >
                         View Details
                       </button>
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Navigation controls */}
+          {filteredProperties.length > 1 && (
+            <>
+              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10">
+                <button
+                  onClick={prevSlide}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  aria-label="Previous property"
+                  disabled={isAnimating}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10">
+                <button
+                  onClick={nextSlide}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-500 shadow-md text-white hover:bg-yellow-600 transition-colors"
+                  aria-label="Next property"
+                  disabled={isAnimating}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
-
-        {recentProperties.length > visibleCount && (
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: Math.ceil(recentProperties.length / visibleCount) }).map((_, i) => (
+        
+        {/* Dots navigation */}
+        {filteredProperties.length > 1 && (
+          <div className="flex justify-center mt-6">
+            {filteredProperties.map((_, idx) => (
               <button
-                key={i}
-                onClick={() => goToSlide(i)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  currentIndex >= i * visibleCount && currentIndex < (i + 1) * visibleCount 
-                    ? "bg-yellow-500 w-6" 
-                    : "bg-gray-300"
+                key={idx}
+                onClick={() => goToSlide(idx)}
+                className={`mx-1 w-3 h-3 rounded-full transition-all ${
+                  idx === activeIndex ? 'bg-yellow-500 w-6' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={`Go to slide ${idx + 1}`}
               />
             ))}
+          </div>
+        )}
+        
+        {/* Property thumbnails - mini preview */}
+        {filteredProperties.length > 1 && !isMobile && (
+          <div className="mt-6 overflow-x-auto pb-2">
+            <div className="flex gap-2 justify-center">
+              {filteredProperties.map((property, idx) => (
+                <button
+                  key={property._id || property.id}
+                  onClick={() => goToSlide(idx)}
+                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
+                    idx === activeIndex ? 'ring-2 ring-yellow-500 ring-offset-2' : 'opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-gray-100">
+                    <img 
+                      src={property.images?.[0] || "/images/default-property.jpg"}
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -236,4 +406,4 @@ const PropertyCarousel = () => {
   );
 };
 
-export default PropertyCarousel;
+export default PropertySliderCarousel;

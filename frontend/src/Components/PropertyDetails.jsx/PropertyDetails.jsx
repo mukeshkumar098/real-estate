@@ -59,6 +59,14 @@ const PropertyDetails = () => {
     setLoadedImages((prev) => ({ ...prev, [index]: true }));
   };
 
+
+useEffect(() => {
+  dispatch(getPropertyById(id));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, [dispatch, id]);
+
+
+
   const handleContactSeller = () => {
     const phone = property.contact_info?.phone || "";
     if (!phone) {

@@ -74,14 +74,13 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const getInitials = () => {
-    if (!user) return "";
-    const { email = "" } = user;
-    const firstWord = email.split('@')[0].split('.')[0];
-    const secondWord = email.split('@')[1]?.split('.')[0];
-    const initials = (firstWord[0] || "") + (secondWord ? secondWord[0] : "");
-    return initials.toUpperCase();
-  };
+ const getInitials = () => {
+  if (!user || !user.name) return "";
+  const nameParts = user.name.trim().split(" ");
+  const firstInitial = nameParts[0]?.charAt(0) || "";
+  const lastInitial = nameParts[1]?.charAt(0) || "";
+  return (firstInitial + lastInitial).toUpperCase();
+};
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -174,7 +173,7 @@ const Navbar = () => {
                         <span className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-lg rounded-full shadow-md transition-all duration-300 hover:shadow-lg transform hover:scale-105">
                           {getInitials()}
                         </span>
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        {/* <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div> */}
                       </div>
                     )
                   ) : (
@@ -184,88 +183,89 @@ const Navbar = () => {
                   )}
                 </div>
                 
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-2xl z-50 w-64 text-sm transition-all transform origin-top-right">
-                    {user ? (
-                      <>
-                        <div className="p-4 border-b">
-                          <div className="flex items-center gap-3">
-                            {isUser.profilePicture ? (
-                              <img
-                                src={isUser.profilePicture}
-                                alt="User"
-                                className="w-10 h-10 rounded-full border-2 border-gray-200"
-                              />
-                            ) : (
-                              <span className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-lg rounded-full">
-                                {getInitials()}
-                              </span>
-                            )}
-                            <div>
-                              <p className="font-medium">{user.email}</p>
-                              <p className="text-xs text-gray-500">Premium Member</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-2">
-                          <Link
-                            to="/profile"
-                            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <FaUserAlt className="text-yellow-500" />
-                            <span>My Profile</span>
-                          </Link>
-                          <Link
-                            to="/orders"
-                            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <FaBox className="text-yellow-500" />
-                            <span>My Orders</span>
-                          </Link>
-                        </div>
-                        <div className="p-2 border-t">
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-red-50 text-red-500"
-                          >
-                            <FaSignOutAlt />
-                            <span>Logout</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="p-2">
-                        <Link
-                          to="/login"
-                          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          <FaSignInAlt className="text-yellow-500" />
-                          <span>Login</span>
-                        </Link>
-                        <Link
-                          to="/register"
-                          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          <FaUserAlt className="text-yellow-500" />
-                          <span>Register</span>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                )}
+              {isUserMenuOpen && (
+  <div className="absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-2xl z-50 w-64 text-sm transition-all transform origin-top-right">
+    {user ? (
+      <>
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-3">
+            {user.profilePicture ? (
+              <img
+                src={user.profilePicture}
+                alt="User"
+                className="w-10 h-10 rounded-full border-2 border-gray-200"
+              />
+            ) : (
+              <span className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-lg rounded-full">
+                {getInitials()}
+              </span>
+            )}
+            <div>
+              <p className="font-medium">{user.name}</p>
+              <p className="text-xs text-gray-500">Premium Member</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-2">
+          <Link
+            to="/profile"
+            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+            onClick={() => setIsUserMenuOpen(false)}
+          >
+            <FaUserAlt className="text-yellow-500" />
+            <span>My Profile</span>
+          </Link>
+          <Link
+            to="/orders"
+            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+            onClick={() => setIsUserMenuOpen(false)}
+          >
+            <FaBox className="text-yellow-500" />
+            <span>My Orders</span>
+          </Link>
+        </div>
+        <div className="p-2 border-t">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-red-50 text-red-500"
+          >
+            <FaSignOutAlt />
+            <span>Logout</span>
+          </button>
+        </div>
+      </>
+    ) : (
+      <div className="p-2">
+        <Link
+          to="/login"
+          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+          onClick={() => setIsUserMenuOpen(false)}
+        >
+          <FaSignInAlt className="text-yellow-500" />
+          <span>Login</span>
+        </Link>
+        <Link
+          to="/register"
+          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+          onClick={() => setIsUserMenuOpen(false)}
+        >
+          <FaUserAlt className="text-yellow-500" />
+          <span>Register</span>
+        </Link>
+      </div>
+    )}
+  </div>
+)}
+
               </div>
 
               {/* Cart Icon */}
-              <Link to="/cart" className="relative p-2 rounded-full hover:bg-yellow-50 transition-all duration-300">
+              {/* <Link to="/cart" className="relative p-2 rounded-full hover:bg-yellow-50 transition-all duration-300">
                 <CiShoppingCart size={24} className="text-gray-700 hover:text-yellow-500 transition duration-300" />
                 <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-md transform scale-100 hover:scale-110 transition-all duration-300">
                   10
                 </span>
-              </Link>
+              </Link> */}
 
               {/* Mobile Menu Icon */}
               <button 
@@ -366,14 +366,14 @@ const Navbar = () => {
                     <FaUserAlt className="text-yellow-500" />
                     <span>My Profile</span>
                   </Link>
-                  <Link
+                  {/* <Link
                     to="/orders"
                     className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700 text-sm"
                     onClick={() => setVisible(false)}
                   >
                     <FaBox className="text-yellow-500" />
                     <span>My Orders</span>
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="p-2 border-t">
                   <button
