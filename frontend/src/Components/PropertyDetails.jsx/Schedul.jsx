@@ -145,7 +145,7 @@ export default function PropertySidebar({ property }) {
         </div>
 
         {/* Schedule visit section */}
-        <div className="bg-blue-50 p-5 rounded-xl mb-6 border border-blue-100">
+        <div className="bg-yellow-50 p-5 rounded-xl mb-6 border border-blue-100">
           <h4 className="text-lg font-semibold text-gray-800 mb-4">Schedule a Visit</h4>
           
           {isScheduled ? (
@@ -195,7 +195,7 @@ export default function PropertySidebar({ property }) {
               
               <button
                 onClick={handleScheduleVisit}
-                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-200 font-medium flex items-center justify-center"
+                className="w-full bg-yellow-500 text-white p-3 rounded-lg hover:bg-yellow-600 cursor-pointer transition duration-200 font-medium flex items-center justify-center"
               >
                 Schedule a Visit
               </button>

@@ -24,37 +24,30 @@ import SellerPropertyForm from "./Components/PostProperty/PostProperty";
 import AllProperties from "./page/allProperty";
 import ContactPage from "./page/contect-Us/contact";
 import AboutPage from "./page/about-Us/about";
+import SimpleHomePanel from "./Components/PropertyDetails.jsx";
 function App() {
   return (
     <BrowserRouter>
-     <Suspense
-  fallback={
-    <div className="flex flex-col items-center mt-10 text-gray-600">
-      <FaSpinner className="animate-spin text-blue-600 text-3xl mb-2" />
-      <div>Loading...</div>
-    </div>
-  }
->
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center mt-10 text-gray-600">
+            <FaSpinner className="animate-spin text-blue-600 text-3xl mb-2" />
+            <div>Loading...</div>
+          </div>
+        }
+      >
         <Routes>
-          <Route path="/" element={ <><Navbar/><Home /></> } />
+          <Route path="/" element={<><Navbar /><Home /></>} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<><Navbar /><UserProfile /><Footer /></>} />
-           <Route path="/all-properties" element={<><Navbar /><AllProperties /><Footer /></>} />
-           <Route path="/contact" element={<><Navbar /><ContactPage/><Footer /></>} />
-            <Route path="/about" element={<><Navbar /><AboutPage/><Footer /></>} />
+          <Route path="/all-properties" element={<><Navbar /><AllProperties /><Footer /></>} />
+          <Route path="/contact" element={<><Navbar /><ContactPage /><Footer /></>} />
+          <Route path="/about" element={<><Navbar /><AboutPage /><Footer /></>} />
           <Route
             path="/property/:id"
-            element={
-              <>
-                <Navbar />
-                
-                <PropertyDetails />
-                <Footer />
-              </>
-            }
-          />
-             <Route path="/agent" element={<><Navbar /><VerifiedSellersCart /><Footer /></>} />
+            element={ <><SimpleHomePanel /></>}/>
+          <Route path="/agent" element={<><Navbar /><VerifiedSellersCart /><Footer /></>} />
           <Route path="/admin" element={<RealEstateAdminDashboard />} />
           <Route path="/UnverifiedSellers" element={<AdminUnVerifySeller />} />
           <Route path="/VerifiedSellers" element={<VerifiedSellers />} />
