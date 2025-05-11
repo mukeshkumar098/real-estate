@@ -12,6 +12,12 @@ const AllProperties = () => {
   const [likes, setLikes] = useState({});
   const [views, setViews] = useState({});
   
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, []);
+
+
+  
   // Filter states
   const [titleFilter, setTitleFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
@@ -69,12 +75,6 @@ const AllProperties = () => {
     }));
   };
 
-
-
-  useEffect(() => {
-  dispatch(getPropertyById(id));
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}, [dispatch, id]);
 
 
 

@@ -269,7 +269,10 @@ const SearchComponent = () => {
               <motion.button
                 key={type.label}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedType(type.label)}
+                onClick={() => {
+                  setSelectedType(type.label);
+                  setShowDropdown(true); // Show dropdown when type is selected
+                }}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1 ${
                   selectedType === type.label
                     ? "bg-yellow-500 text-white shadow-md"

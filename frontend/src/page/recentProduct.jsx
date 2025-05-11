@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { FaMapMarkerAlt, FaRupeeSign, FaExpand, FaBed, FaBath, FaCalendarAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const PropertySliderCarousel = () => {
+  const navigate = useNavigate();
   // Get properties from Redux store
   const { properties, isLoading, isError } = useSelector((state) => state);
   
@@ -128,6 +130,11 @@ const PropertySliderCarousel = () => {
     return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
   };
 
+  // Handle view details click
+  const handleViewDetails = (propertyId) => {
+    navigate(`/property/${propertyId}`);
+  };
+
   // Loading and error states
   if (isLoading) return (
     <div className="w-full py-8 px-4 md:px-8 bg-gray-50">
@@ -202,30 +209,30 @@ const PropertySliderCarousel = () => {
           onMouseLeave={handleMouseLeave}
         >
           {/* Main slider */}
-          <div className="relative h-96 md:h-[500px] overflow-hidden">
+          <div className="relative h-[430px] sm:h-[500px] md:h-[500px] overflow-hidden">
             {filteredProperties.map((property, index) => (
               <div
                 key={property._id || property.id}
                 className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                  index === activeIndex 
-                    ? "opacity-100 translate-x-0" 
-                    : index < activeIndex 
-                      ? "opacity-0 -translate-x-full" 
-                      : "opacity-0 translate-x-full"
+                  index === activeIndex
+                    ? "opacity-100 translate-x-0"
+                    : index < activeIndex
+                    ? "opacity-0 -translate-x-full"
+                    : "opacity-0 translate-x-full"
                 }`}
               >
                 <div className="h-full flex flex-col md:flex-row">
-                  {/* Image section - Fixed responsive image container */}
-                  <div className="relative w-full md:w-7/12 h-60 md:h-full overflow-hidden bg-gray-100">
+                  {/* Image Section */}
+                  <div className="relative w-full md:w-7/12 h-100 sm:h-72 md:h-auto max-h-[420px] overflow-hidden bg-gray-100">
                     <img
                       src={property.images?.[0] || "/images/default-property.jpg"}
                       alt={property.title}
                       className="absolute inset-0 w-full h-full object-cover"
                       loading={index === activeIndex ? "eager" : "lazy"}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent md:bg-gradient-to-r md:from-black/30 md:to-transparent"></div>
-                    
-                    {/* Top left badge */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent md:from-black/30 md:to-transparent"></div>
+
+                    {/* Top Left Badge */}
                     <div className="absolute top-4 left-4 z-10">
                       <div className="flex gap-2">
                         <span className="bg-yellow-500 text-white text-xs px-2.5 py-1 rounded-md font-medium">
@@ -239,35 +246,42 @@ const PropertySliderCarousel = () => {
                       </div>
                     </div>
 
-                    {/* Property title overlay (mobile only) */}
+                    {/* Title for Mobile */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden z-10">
-                      <h3 className="font-bold text-xl text-white">
+                      <h3 className="font-bold text-lg sm:text-xl text-white">
                         {property.title}
                       </h3>
                       <div className="flex items-center mt-1">
                         <FaMapMarkerAlt className="mr-1.5 text-yellow-400" size={12} />
                         <span className="text-white/90 text-sm truncate">
-                          {property.location?.address || 'Location not specified'}
+                          {property.location?.address || "Location not specified"}
                         </span>
                       </div>
+                      {/* Added date for mobile */}
+                      {property.createdAt && (
+                        <div className="flex items-center mt-2 text-xs text-white/90">
+                          <FaCalendarAlt className="mr-1.5 text-yellow-400" size={10} />
+                          <span>Added {getTimeAgo(property.createdAt)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  {/* Content section */}
-                  <div className="relative w-full md:w-5/12 p-6 md:p-8 flex flex-col">
-                    {/* Desktop title */}
+
+                  {/* Content Section */}
+                  <div className="relative w-full md:w-5/12 p-4 sm:p-6 md:p-8 flex flex-col">
+                    {/* Title for Desktop */}
                     <div className="hidden md:block mb-6">
-                      <h3 className="font-bold text-2xl text-gray-800 mb-2">
+                      <h3 className="font-bold text-xl md:text-2xl text-gray-800 mb-2">
                         {property.title}
                       </h3>
                       <div className="flex items-center">
                         <FaMapMarkerAlt className="mr-1.5 text-yellow-500" size={14} />
                         <span className="text-gray-600">
-                          {property.location?.address || 'Location not specified'}
+                          {property.location?.address || "Location not specified"}
                         </span>
                       </div>
-                      
-                      {/* Date added */}
+
+                      {/* Date */}
                       {property.createdAt && (
                         <div className="flex items-center mt-2 text-sm text-gray-500">
                           <FaCalendarAlt className="mr-1.5 text-yellow-500" size={12} />
@@ -275,49 +289,55 @@ const PropertySliderCarousel = () => {
                         </div>
                       )}
                     </div>
-                    
-                    {/* Specifications */}
-                    <div className="grid grid-cols-3 gap-2 mb-6">
-                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <FaBed className="text-yellow-500 mb-1" size={20} />
+
+                    {/* Specs */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="flex flex-col items-center justify-center p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaBed className="text-yellow-500 mb-1 text-xl sm:text-2xl" />
                         <span className="text-xs text-gray-500">Beds</span>
-                        <span className="font-medium text-gray-800">{property.bedrooms || 'N/A'}</span>
+                        <span className="font-sm sm:font-medium text-gray-800">
+                          {property.bedrooms || "N/A"}
+                        </span>
                       </div>
-                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <FaBath className="text-yellow-500 mb-1" size={20} />
+                      <div className="flex flex-col items-center justify-center p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaBath className="text-yellow-500 mb-1 text-xl sm:text-2xl" />
                         <span className="text-xs text-gray-500">Baths</span>
-                        <span className="font-medium text-gray-800">{property.bathrooms || 'N/A'}</span>
+                        <span className="font-sm sm:font-medium text-gray-800">
+                          {property.bathrooms || "N/A"}
+                        </span>
                       </div>
-                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <FaExpand className="text-yellow-500 mb-1" size={20} />
+                      <div className="flex flex-col items-center justify-center p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <FaExpand className="text-yellow-500 mb-1 text-xl sm:text-2xl" />
                         <span className="text-xs text-gray-500">Area</span>
-                        <span className="font-medium text-gray-800">
-                          {property.area?.built_up || property.area?.carpet || 'N/A'}
-                          {(property.area?.built_up || property.area?.carpet) ? <span className="text-xs"> sqft</span> : ''}
+                        <span className="font-sm sm:font-medium text-gray-800">
+                          {property.area?.built_up || property.area?.carpet || "N/A"}
+                          {(property.area?.built_up || property.area?.carpet) && (
+                            <span className="text-md text-xs"> sqft</span>
+                          )}
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Description */}
                     {property.description && (
                       <div className="mb-auto">
-                        <h4 className="font-semibold text-gray-800 mb-2">Description</h4>
-                        <p className="text-sm text-gray-600 line-clamp-4 md:line-clamp-6">
+                        <h4 className="font-semibold text-gray-800 mb-2 md:sm:mb-2 lg:sm:mb-2">Description</h4>
+                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-3 sm:line-clamp-4 md:line-clamp-6">
                           {property.description}
                         </p>
                       </div>
                     )}
-                    
-                    {/* Price and action */}
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                      <div className="flex items-center text-yellow-600 font-bold text-xl">
+
+                    {/* Price & Action */}
+                    <div className="pt-5 sm:mt-6 md:pt-4 border-t border-gray-100 flex justify-between items-center">
+                      <div className="flex items-center text-yellow-600 font-bold text-lg sm:text-xl">
                         <FaRupeeSign className="mr-1" />
-                        <span>{property.price?.toLocaleString() || 'Price not available'}</span>
+                        <span>{property.price?.toLocaleString() || "Price not available"}</span>
                       </div>
-                      
+
                       <button
-                        onClick={() => {/* View property details */}}
-                        className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md transition-colors"
+                        onClick={() => handleViewDetails(property._id || property.id)}
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md transition-colors text-sm sm:text-base"
                       >
                         View Details
                       </button>
