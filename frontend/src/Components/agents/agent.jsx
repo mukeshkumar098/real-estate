@@ -295,6 +295,7 @@ import React, { useState, useEffect } from 'react';
 import { FaPhone, FaEnvelope, FaWhatsapp, FaHome, FaStar, FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
 import { MdVerified } from 'react-icons/md';
 import { RiHomeHeartLine } from 'react-icons/ri';
+import { useLocation } from 'react-router-dom';
 
 const RealEstateAgentsListing = () => {
   const [agents, setAgents] = useState([]);
@@ -302,6 +303,9 @@ const RealEstateAgentsListing = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, []);
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -435,6 +439,8 @@ const RealEstateAgentsListing = () => {
       </div>
     );
   }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6">

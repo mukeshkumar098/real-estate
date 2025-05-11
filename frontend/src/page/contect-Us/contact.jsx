@@ -26,6 +26,11 @@ const ContactPage = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
+    useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, []);
+
+
   const [activeAccordion, setActiveAccordion] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
