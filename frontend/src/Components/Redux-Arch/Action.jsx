@@ -12,8 +12,8 @@ export const registerUser = (payload) => {
     dispatch(getRequest());
 
     return axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/register`, payload, {
-        headers: { "Content-Type": "application/json" },
-      })
+      headers: { "Content-Type": "application/json" },
+    })
       .then((res) => {
         console.log(res.data, "User registered successfully");
         dispatch(getSuccess(res.data));
@@ -57,107 +57,137 @@ const token = localStorage.getItem("authToken")
 console.log(token);
 
 export const postProperty = (payload) => {
-    return (dispatch, getState) => {
-      dispatch(postPropertyRequest());
-  
-      // Get token from the Redux store (assuming it's stored in `auth.token`)
-      const token = localStorage.getItem("authToken")
-  
-      return axios
-        .post(`${BACK_END_URL}/properties/add-properties`, payload, {
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Add the token here
-          },
-        })
-        .then((res) => {
-          console.log(res.data, "Property posted successfully");
-          dispatch(postPropertySuccess(res.data));
-          return res;
-        })
-        .catch((err) => {
-          console.error(err, "Error while posting property");
-          dispatch(postPropertyFailure());
-          return err;
-        });
-    };
-  };  
+  return (dispatch, getState) => {
+    dispatch(postPropertyRequest());
 
-  export const searchProperties = (searchParams) => {
-    return (dispatch) => {
-      dispatch({ type: types.SEARCH_PROPERTIES_REQUEST });
-  
-      // Convert price to number if it exists
-      if (searchParams.price) {
-        searchParams.price = Number(searchParams.price);
-      }
-  
-      return axios
-        .get(`${import.meta.env.VITE_BACK_END_URL}/properties/searchProperties`, { 
-          params: {
-            location: searchParams.location || '',
-            property_type: searchParams.property_type || '',
-            price: searchParams.price || '',
-            query: searchParams.query || ''
-          }
-        })
-        .then((res) => {
-          console.log("Search results:", res.data);
-          dispatch({ type: types.SEARCH_PROPERTIES_SUCCESS, payload: res.data });
-          return res.data;
-        })
-        .catch((err) => {
-          console.error("Search error:", err);
-          dispatch({ type: types.SEARCH_PROPERTIES_FAILURE });
-          return err;
-        });
-    };
+    // Get token from the Redux store (assuming it's stored in `auth.token`)
+    const token = localStorage.getItem("authToken")
+
+    return axios
+      .post(`${BACK_END_URL}/properties/add-properties`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Add the token here
+        },
+      })
+      .then((res) => {
+        console.log(res.data, "Property posted successfully");
+        dispatch(postPropertySuccess(res.data));
+        return res;
+      })
+      .catch((err) => {
+        console.error(err, "Error while posting property");
+        dispatch(postPropertyFailure());
+        return err;
+      });
   };
-  
-  export const getPropertyById = (id) => {
-    return (dispatch) => {
-      dispatch({ type: types.GET_PROPERTY_BY_ID_REQUEST });
-  
-      return axios
-        .get(`${import.meta.env.VITE_BACK_END_URL}/properties/getPropertyById/${id}`)
-        .then((res) => {
-          dispatch({ type: types.GET_PROPERTY_BY_ID_SUCCESS, payload: res.data });
-          return res.data;
-        })
-        .catch((err) => {
-          dispatch({ type: types.GET_PROPERTY_BY_ID_FAILURE });
-          console.error("Property fetch error:", err);
-          return err;
-        });
-    };
+};
+
+export const searchProperties = (searchParams) => {
+  return (dispatch) => {
+    dispatch({ type: types.SEARCH_PROPERTIES_REQUEST });
+
+    // Convert price to number if it exists
+    if (searchParams.price) {
+      searchParams.price = Number(searchParams.price);
+    }
+
+    return axios
+      .get(`${import.meta.env.VITE_BACK_END_URL}/properties/searchProperties`, {
+        params: {
+          location: searchParams.location || '',
+          property_type: searchParams.property_type || '',
+          price: searchParams.price || '',
+          query: searchParams.query || ''
+        }
+      })
+      .then((res) => {
+        console.log("Search results:", res.data);
+        dispatch({ type: types.SEARCH_PROPERTIES_SUCCESS, payload: res.data });
+        return res.data;
+      })
+      .catch((err) => {
+        console.error("Search error:", err);
+        dispatch({ type: types.SEARCH_PROPERTIES_FAILURE });
+        return err;
+      });
   };
+};
+
+export const getPropertyById = (id) => {
+  return (dispatch) => {
+    dispatch({ type: types.GET_PROPERTY_BY_ID_REQUEST });
+
+    return axios
+      .get(`${import.meta.env.VITE_BACK_END_URL}/properties/getPropertyById/${id}`)
+      .then((res) => {
+        dispatch({ type: types.GET_PROPERTY_BY_ID_SUCCESS, payload: res.data });
+        return res.data;
+      })
+      .catch((err) => {
+        dispatch({ type: types.GET_PROPERTY_BY_ID_FAILURE });
+        console.error("Property fetch error:", err);
+        return err;
+      });
+  };
+};
 
 
-  const loginRequest = () => ({ type: types.LOGIN_REQUEST });
-  const loginSuccess = (payload) => ({ type: types.LOGIN_SUCCESS, payload });
-  const loginFailure = () => ({ type: types.LOGIN_FAILURE });
-  
-  export const loginUser = (payload) => {
-    return (dispatch) => {
-      dispatch(loginRequest());
-  
-      return axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/login`, payload, {
-          headers: { "Content-Type": "application/json" },
-        })
-        .then((res) => {
-          console.log("Login success:", res.data);
-  
-          // Save token and user info to localStorage
-          localStorage.setItem("token", res.data.token);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-  
-          dispatch(loginSuccess(res.data));
-          return res.data;
-        })
-        .catch((err) => {
-          console.error("Login error:", err.response?.data || err.message);
-          dispatch(loginFailure());
-          return err;
-        });
-    };
+const loginRequest = () => ({ type: types.LOGIN_REQUEST });
+const loginSuccess = (payload) => ({ type: types.LOGIN_SUCCESS, payload });
+const loginFailure = () => ({ type: types.LOGIN_FAILURE });
+
+const profileRequest = () => ({ type: types.GET_PROFILE });
+const profileSuccess = (payload) => ({ type: types.GET_PROFILE_SUCCESS, payload });
+const profileFailure = (error) => ({ type: types.GET_PROFILE_FAILURE, payload: error });
+
+// Thunk Action
+
+export const fetchUserProfile = () => {
+  return (dispatch) => {
+    dispatch(profileRequest());
+    const token = localStorage.getItem("authToken");
+    return axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true, // Optional: only needed if using cookies/session auth
+    })
+      .then((res) => {
+        console.log("Profile fetch success:", res.data);
+        dispatch(profileSuccess(res.data));
+        console.log(res)
+      })
+      .catch((err) => {
+        const errorMsg = err.response?.data?.message || err.message || "Unknown error";
+        console.error("Profile fetch error:", errorMsg);
+        dispatch(profileFailure(errorMsg));
+        return Promise.reject(errorMsg);
+      });
   };
+};
+
+export const loginUser = (payload) => {
+  return (dispatch) => {
+    dispatch(loginRequest());
+
+    return axios.post(`${import.meta.env.VITE_BACK_END_URL}/user/login`, payload, {
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        console.log("Login success:", res.data);
+
+        // Save token and user info to localStorage
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        dispatch(loginSuccess(res.data));
+        return res.data;
+      })
+      .catch((err) => {
+        console.error("Login error:", err.response?.data || err.message);
+        dispatch(loginFailure());
+        return err;
+      });
+  };
+};

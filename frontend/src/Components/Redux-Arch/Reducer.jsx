@@ -1,3 +1,4 @@
+
 import * as types from "./ActionType";
 
 const initialState = {
@@ -7,6 +8,7 @@ const initialState = {
   properties: [],
   searchResults: [],
   selectedProperty: null,
+  UserProfile:[],
   token: localStorage.getItem("token") || "",
   user: JSON.parse(localStorage.getItem("user")) || null,
 };
@@ -49,6 +51,16 @@ const reducer = (state = initialState, action) => {
       return { ...state, isLoading: false, isError: false, properties: payload };
 
     case types.GET_PROPERTIES_FAILURE:
+      return { ...state, isLoading: false, isError: true };
+
+// profile
+      case types.GET_PROFILE:
+      return { ...state, isLoading: true, isError: false };
+
+    case types.GET_PROFILE_SUCCESS:
+      return { ...state, isLoading: false, isError: false, UserProfile: payload };
+
+    case types.GET_PROFILE_FAILURE:
       return { ...state, isLoading: false, isError: true };
 
     // Post Property

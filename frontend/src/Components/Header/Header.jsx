@@ -4,6 +4,7 @@ import { CiUser, CiShoppingCart, CiMenuBurger } from "react-icons/ci";
 import { IoIosArrowBack, IoMdClose } from "react-icons/io";
 import { FaUserAlt, FaBox, FaSignOutAlt, FaSignInAlt, FaHome, FaBuilding, FaCheckCircle, FaInfoCircle, FaEnvelope } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchUserProfile } from "../Redux-Arch/Action";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
@@ -16,8 +17,15 @@ const Navbar = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navRef = useRef(null);
 
-  const isUser = useSelector((state) => state.user);
+  const isUser = useSelector((state) => state.UserProfile);
   const dispatch = useDispatch();
+
+    useEffect(() => {
+      dispatch(fetchUserProfile());
+    }, [dispatch]);
+
+
+console.log(isUser,"jhkjdhadkasbjais");
 
   // Track window width for responsive behavior
   useEffect(() => {
@@ -162,7 +170,7 @@ const Navbar = () => {
                     isUser.profilePicture ? (
                       <div className="relative">
                         <img
-                          src={isUser.profilePicture}
+                         src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`} 
                           alt="User"
                           className="w-10 h-10 rounded-full border-2 border-gray-200 hover:border-yellow-400 shadow-md transition-all duration-300"
                         />
@@ -189,9 +197,9 @@ const Navbar = () => {
       <>
         <div className="p-4 border-b">
           <div className="flex items-center gap-3">
-            {user.profilePicture ? (
+            { isUser.profilePicture ? (
               <img
-                src={user.profilePicture}
+                src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`} 
                 alt="User"
                 className="w-10 h-10 rounded-full border-2 border-gray-200"
               />
