@@ -1,14 +1,14 @@
-
 import * as types from "./ActionType";
 
 const initialState = {
   isLoading: false,
   isError: false,
-  isUser: [],
+  isPosting: false,
+  users: [], 
   properties: [],
   searchResults: [],
   selectedProperty: null,
-  UserProfile:[],
+  userProfile: null, 
   token: localStorage.getItem("token") || "",
   user: JSON.parse(localStorage.getItem("user")) || null,
 };
@@ -17,17 +17,17 @@ const reducer = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    // User Registration
+    // ===================== User Registration =====================
     case types.GETREQUEST:
       return { ...state, isLoading: true, isError: false };
 
     case types.GETSUCCESS:
-      return { ...state, isLoading: false, isError: false, isUser: payload };
+      return { ...state, isLoading: false, isError: false, users: payload };
 
     case types.GETFAILURE:
       return { ...state, isLoading: false, isError: true };
 
-    // Login
+    // ===================== Login =====================
     case types.LOGIN_REQUEST:
       return { ...state, isLoading: true, isError: false };
 
@@ -43,7 +43,17 @@ const reducer = (state = initialState, action) => {
     case types.LOGIN_FAILURE:
       return { ...state, isLoading: false, isError: true };
 
-    // Fetch Properties
+    // ===================== Get User Profile =====================
+    case types.GET_PROFILE:
+      return { ...state, isLoading: true, isError: false };
+
+    case types.GET_PROFILE_SUCCESS:
+      return { ...state, isLoading: false, isError: false, userProfile: payload };
+
+    case types.GET_PROFILE_FAILURE:
+      return { ...state, isLoading: false, isError: true };
+
+    // ===================== Get All Properties =====================
     case types.GET_PROPERTIES_REQUEST:
       return { ...state, isLoading: true, isError: false };
 
@@ -53,17 +63,7 @@ const reducer = (state = initialState, action) => {
     case types.GET_PROPERTIES_FAILURE:
       return { ...state, isLoading: false, isError: true };
 
-// profile
-      case types.GET_PROFILE:
-      return { ...state, isLoading: true, isError: false };
-
-    case types.GET_PROFILE_SUCCESS:
-      return { ...state, isLoading: false, isError: false, UserProfile: payload };
-
-    case types.GET_PROFILE_FAILURE:
-      return { ...state, isLoading: false, isError: true };
-
-    // Post Property
+    // ===================== Post New Property =====================
     case types.POST_PROPERTY_REQUEST:
       return { ...state, isPosting: true, isError: false };
 
@@ -78,7 +78,7 @@ const reducer = (state = initialState, action) => {
     case types.POST_PROPERTY_FAILURE:
       return { ...state, isPosting: false, isError: true };
 
-    // Search Properties
+    // ===================== Search Properties =====================
     case types.SEARCH_PROPERTIES_REQUEST:
       return { ...state, isLoading: true, isError: false };
 
@@ -88,7 +88,7 @@ const reducer = (state = initialState, action) => {
     case types.SEARCH_PROPERTIES_FAILURE:
       return { ...state, isLoading: false, isError: true };
 
-    // Get Property by ID
+    // ===================== Get Property by ID =====================
     case types.GET_PROPERTY_BY_ID_REQUEST:
       return { ...state, isLoading: true, isError: false };
 
@@ -98,6 +98,7 @@ const reducer = (state = initialState, action) => {
     case types.GET_PROPERTY_BY_ID_FAILURE:
       return { ...state, isLoading: false, isError: true };
 
+    // ===================== Default =====================
     default:
       return state;
   }

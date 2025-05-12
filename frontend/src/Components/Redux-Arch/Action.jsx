@@ -139,9 +139,9 @@ const loginFailure = () => ({ type: types.LOGIN_FAILURE });
 
 const profileRequest = () => ({ type: types.GET_PROFILE });
 const profileSuccess = (payload) => ({ type: types.GET_PROFILE_SUCCESS, payload });
-const profileFailure = (error) => ({ type: types.GET_PROFILE_FAILURE, payload: error });
+const profileFailure = () => ({ type: types.GET_PROFILE_FAILURE,});
 
-// Thunk Action
+// // Thunk Action
 
 export const fetchUserProfile = () => {
   return (dispatch) => {
@@ -156,7 +156,7 @@ export const fetchUserProfile = () => {
       .then((res) => {
         console.log("Profile fetch success:", res.data);
         dispatch(profileSuccess(res.data));
-        console.log(res)
+        return res.data
       })
       .catch((err) => {
         const errorMsg = err.response?.data?.message || err.message || "Unknown error";

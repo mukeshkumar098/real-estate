@@ -24,13 +24,13 @@ const SimpleHomePanel = ({ title }) => {
                     </div>
 
                     {/* Right side: Back to properties button */}
-                    <Link
+                    {/* <Link
                         to="/properties"
                         className="hidden sm:flex items-center text-yellow-500 hover:text-yellow-600 transition text-sm font-medium"
                     >
                         <FaArrowLeft className="mr-1" />
                         <span>Back to Properties</span>
-                    </Link>
+                    </Link> */}
                 </div>
             </div>
               <PropertyDetails />

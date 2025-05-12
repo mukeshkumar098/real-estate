@@ -17,15 +17,14 @@ const Navbar = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const navRef = useRef(null);
 
-  const isUser = useSelector((state) => state.UserProfile);
+  const isUser = useSelector((state) => state.userProfile);
+  console.log(isUser,"nsnsakhhyg");
+  
   const dispatch = useDispatch();
 
-    useEffect(() => {
-      dispatch(fetchUserProfile());
-    }, [dispatch]);
-
-
-console.log(isUser,"jhkjdhadkasbjais");
+  useEffect(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
 
   // Track window width for responsive behavior
   useEffect(() => {
@@ -35,10 +34,10 @@ console.log(isUser,"jhkjdhadkasbjais");
         setVisible(false); // Hide sidebar on desktop
       }
     };
-    
+
     window.addEventListener("resize", handleResize);
     handleResize();
-    
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -82,13 +81,13 @@ console.log(isUser,"jhkjdhadkasbjais");
     navigate("/login");
   };
 
- const getInitials = () => {
-  if (!user || !user.name) return "";
-  const nameParts = user.name.trim().split(" ");
-  const firstInitial = nameParts[0]?.charAt(0) || "";
-  const lastInitial = nameParts[1]?.charAt(0) || "";
-  return (firstInitial + lastInitial).toUpperCase();
-};
+  const getInitials = () => {
+    if (!user || !user.name) return "";
+    const nameParts = user.name.trim().split(" ");
+    const firstInitial = nameParts[0]?.charAt(0) || "";
+    const lastInitial = nameParts[1]?.charAt(0) || "";
+    return (firstInitial + lastInitial).toUpperCase();
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -99,7 +98,7 @@ console.log(isUser,"jhkjdhadkasbjais");
         setVisible(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [windowWidth]);
@@ -114,9 +113,9 @@ console.log(isUser,"jhkjdhadkasbjais");
 
   return (
     <div ref={navRef}>
-      <nav 
-        className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-100 ease-linear ${scrolled 
-          ? "bg-white shadow-md py-2" 
+      <nav
+        className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-100 ease-linear ${scrolled
+          ? "bg-white shadow-md py-2"
           : "bg-white/95 backdrop-blur-sm py-4"}`}
         style={{ willChange: 'transform' }}
       >
@@ -125,10 +124,10 @@ console.log(isUser,"jhkjdhadkasbjais");
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative overflow-hidden rounded-full transition-all duration-300">
-                <img 
-                  src="/Images/logo.webp" 
-                  alt="logo" 
-                  className="w-12 h-12 rounded-full shadow-md hover:shadow-lg transform group-hover:scale-105 transition-all duration-300" 
+                <img
+                  src="/Images/logo.webp"
+                  alt="logo"
+                  className="w-12 h-12 rounded-full shadow-md hover:shadow-lg transform group-hover:scale-105 transition-all duration-300"
                 />
               </div>
               <h4 className="hidden sm:block text-xl md:text-2xl font-semibold text-gray-800 group-hover:text-yellow-500 transition-all duration-300">
@@ -142,13 +141,13 @@ console.log(isUser,"jhkjdhadkasbjais");
             <div className="hidden md:block">
               <ul className="flex space-x-1 lg:space-x-2">
                 {navItems.map((item) => (
-                  <NavLink 
-                    key={item.name} 
-                    to={item.path} 
-                    className={({ isActive }) => 
+                  <NavLink
+                    key={item.name}
+                    to={item.path}
+                    className={({ isActive }) =>
                       `px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 
-                      ${isActive 
-                        ? "text-white bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-md" 
+                      ${isActive
+                        ? "text-white bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-md"
                         : "text-gray-700 hover:text-yellow-500 hover:bg-yellow-50"}`
                     }
                   >
@@ -167,10 +166,10 @@ console.log(isUser,"jhkjdhadkasbjais");
                   onClick={() => setIsUserMenuOpen((prev) => !prev)}
                 >
                   {user ? (
-                    isUser.profilePicture ? (
+                    isUser?.profilePicture ? (
                       <div className="relative">
                         <img
-                         src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`} 
+                          src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`}
                           alt="User"
                           className="w-10 h-10 rounded-full border-2 border-gray-200 hover:border-yellow-400 shadow-md transition-all duration-300"
                         />
@@ -190,98 +189,90 @@ console.log(isUser,"jhkjdhadkasbjais");
                     </div>
                   )}
                 </div>
-                
-              {isUserMenuOpen && (
-  <div className="absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-2xl z-50 w-64 text-sm transition-all transform origin-top-right">
-    {user ? (
-      <>
-        <div className="p-4 border-b">
-          <div className="flex items-center gap-3">
-            { isUser.profilePicture ? (
-              <img
-                src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`} 
-                alt="User"
-                className="w-10 h-10 rounded-full border-2 border-gray-200"
-              />
-            ) : (
-              <span className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-lg rounded-full">
-                {getInitials()}
-              </span>
-            )}
-            <div>
-              <p className="font-medium">{user.name}</p>
-              <p className="text-xs text-gray-500">Premium Member</p>
-            </div>
-          </div>
-        </div>
-        <div className="p-2">
-          <Link
-            to="/profile"
-            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-            onClick={() => setIsUserMenuOpen(false)}
-          >
-            <FaUserAlt className="text-yellow-500" />
-            <span>My Profile</span>
-          </Link>
-          <Link
-            to="/orders"
-            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-            onClick={() => setIsUserMenuOpen(false)}
-          >
-            <FaBox className="text-yellow-500" />
-            <span>My Orders</span>
-          </Link>
-        </div>
-        <div className="p-2 border-t">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-red-50 text-red-500"
-          >
-            <FaSignOutAlt />
-            <span>Logout</span>
-          </button>
-        </div>
-      </>
-    ) : (
-      <div className="p-2">
-        <Link
-          to="/login"
-          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-          onClick={() => setIsUserMenuOpen(false)}
-        >
-          <FaSignInAlt className="text-yellow-500" />
-          <span>Login</span>
-        </Link>
-        <Link
-          to="/register"
-          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
-          onClick={() => setIsUserMenuOpen(false)}
-        >
-          <FaUserAlt className="text-yellow-500" />
-          <span>Register</span>
-        </Link>
-      </div>
-    )}
-  </div>
-)}
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-2xl z-50 w-64 text-sm transition-all transform origin-top-right">
+                    {user ? (
+                      <>
+                        <div className="p-4 border-b">
+                          <div className="flex items-center gap-3">
+                            {isUser?.profilePicture ? (
+                              <img
+                                src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`}
+                                alt="User"
+                                className="w-10 h-10 rounded-full border-2 border-gray-200"
+                              />
+                            ) : (
+                              <span className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-lg rounded-full">
+                                {getInitials()}
+                              </span>
+                            )}
+                            <div>
+                              <p className="font-medium">{user.name}</p>
+                              <p className="text-xs text-gray-500">Premium Member</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <Link
+                            to="/profile"
+                            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            <FaUserAlt className="text-yellow-500" />
+                            <span>My Profile</span>
+                          </Link>
+                          <Link
+                            to="/orders"
+                            className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            <FaBox className="text-yellow-500" />
+                            <span>My Orders</span>
+                          </Link>
+                        </div>
+                        <div className="p-2 border-t">
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-red-50 text-red-500"
+                          >
+                            <FaSignOutAlt />
+                            <span>Logout</span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-2">
+                        <Link
+                          to="/login"
+                          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <FaSignInAlt className="text-yellow-500" />
+                          <span>Login</span>
+                        </Link>
+                        <Link
+                          to="/register"
+                          className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <FaUserAlt className="text-yellow-500" />
+                          <span>Register</span>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
 
               </div>
 
-              {/* Cart Icon */}
-              {/* <Link to="/cart" className="relative p-2 rounded-full hover:bg-yellow-50 transition-all duration-300">
-                <CiShoppingCart size={24} className="text-gray-700 hover:text-yellow-500 transition duration-300" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-md transform scale-100 hover:scale-110 transition-all duration-300">
-                  10
-                </span>
-              </Link> */}
-
               {/* Mobile Menu Icon */}
-              <button 
+              <button
                 className="md:hidden p-2 rounded-full hover:bg-yellow-50 transition-all duration-300 menu-toggle"
                 onClick={() => setVisible(prev => !prev)}
                 aria-label="Toggle mobile menu"
               >
-                {visible ? 
+                {visible ?
                   <IoMdClose size={24} className="text-gray-700 hover:text-yellow-500 transition duration-300" /> :
                   <CiMenuBurger size={24} className="text-gray-700 hover:text-yellow-500 transition duration-300" />
                 }
@@ -293,7 +284,7 @@ console.log(isUser,"jhkjdhadkasbjais");
 
       {/* Mobile Sidebar Overlay */}
       {visible && windowWidth < 768 && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden transition-all duration-300"
           onClick={() => setVisible(false)}
         ></div>
@@ -324,21 +315,21 @@ console.log(isUser,"jhkjdhadkasbjais");
 
           <div className="py-2">
             {navItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) => 
-                  `flex items-center gap-3 py-3 px-6 border-b border-gray-100 
-                  ${isActive 
-                    ? "text-yellow-600 bg-yellow-50 border-l-4 border-l-yellow-500" 
-                    : "text-gray-700 hover:bg-gray-50 hover:text-yellow-500"} 
-                  transition-all duration-300`
-                }
-                onClick={() => setVisible(false)}
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.name}</span>
-              </NavLink>
+                              <NavLink
+                  key={item.name}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 py-3 px-6 border-b border-gray-100 
+                    ${isActive
+                      ? "text-yellow-600 bg-yellow-50 border-l-4 border-l-yellow-500"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-yellow-500"} 
+                    transition-all duration-300`
+                  }
+                  onClick={() => setVisible(false)}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span>{item.name}</span>
+                </NavLink>
             ))}
           </div>
 
@@ -348,9 +339,9 @@ console.log(isUser,"jhkjdhadkasbjais");
               <>
                 <div className="p-4 border-b">
                   <div className="flex items-center gap-3">
-                    {isUser.profilePicture ? (
+                    {isUser?.profilePicture ? (
                       <img
-                        src={isUser.profilePicture}
+                        src={`${import.meta.env.VITE_BACK_END_URL}${isUser.profilePicture}`}
                         alt="User"
                         className="w-10 h-10 rounded-full border-2 border-gray-200"
                       />
@@ -360,7 +351,7 @@ console.log(isUser,"jhkjdhadkasbjais");
                       </span>
                     )}
                     <div>
-                      <p className="font-medium text-sm">{user.email}</p>
+                      <p className="font-medium text-sm">{user.name}</p>
                       <p className="text-xs text-gray-500">Premium Member</p>
                     </div>
                   </div>
@@ -374,14 +365,14 @@ console.log(isUser,"jhkjdhadkasbjais");
                     <FaUserAlt className="text-yellow-500" />
                     <span>My Profile</span>
                   </Link>
-                  {/* <Link
+                  <Link
                     to="/orders"
                     className="flex items-center gap-3 px-3 py-2 rounded hover:bg-yellow-50 text-gray-700 text-sm"
                     onClick={() => setVisible(false)}
                   >
                     <FaBox className="text-yellow-500" />
                     <span>My Orders</span>
-                  </Link> */}
+                  </Link>
                 </div>
                 <div className="p-2 border-t">
                   <button
