@@ -173,7 +173,7 @@ const Navbar = () => {
                           alt="User"
                           className="w-10 h-10 rounded-full border-2 border-gray-200 hover:border-yellow-400 shadow-md transition-all duration-300"
                         />
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        {/* <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div> */}
                       </div>
                     ) : (
                       <div className="relative">
