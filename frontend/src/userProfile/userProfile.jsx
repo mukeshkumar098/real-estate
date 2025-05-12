@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaUpload, FaLock, FaTimes } from "react-icons/fa";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -91,6 +93,7 @@ const UserProfile = () => {
 
       if (formDataToSend.entries().next().done) {
         setError("No changes to update");
+        toast.info("No changes to update");
         setIsLoading(false);
         return;
       }
@@ -111,12 +114,12 @@ const UserProfile = () => {
       if (Object.keys(updatedUserData).length > 0) {
         setUser(updatedUserData);
         setEditMode(false);
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
       } else throw new Error("No user data in response");
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to update profile";
       setError(errorMessage);
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +136,7 @@ const UserProfile = () => {
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setPasswordError("New passwords don't match");
+      toast.error("New passwords don't match");
       return;
     }
 
@@ -151,7 +155,7 @@ const UserProfile = () => {
       );
       
       if (response.data?.success || response.status === 200) {
-        alert("Password updated successfully!");
+        toast.success("Password updated successfully!");
         setIsPasswordModalOpen(false);
         setPasswordData({
           currentPassword: "",
@@ -164,7 +168,7 @@ const UserProfile = () => {
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to update password";
       setPasswordError(errorMessage);
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -215,6 +219,20 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
+      {/* Toast Container */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
       <h2 className="text-3xl font-bold text-center text-yellow-500 mb-6">Your Profile</h2>
 
       {error && (
