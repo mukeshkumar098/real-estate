@@ -87,6 +87,12 @@ const propertiesSchema = new mongoose.Schema(
         'Rain Water Harvesting', 'Shopping Center', 'Hospital', 'School', 'Pet Friendly'
       ]
     }],
+      likedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
     ownership_type: {
       type: String,
       enum: ['Freehold', 'Leasehold', 'Co-operative Society', 'Power of Attorney'],

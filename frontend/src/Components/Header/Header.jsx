@@ -106,7 +106,7 @@ const Navbar = () => {
   const navItems = [
     { name: "HOME", path: "/", icon: <FaHome /> },
     { name: "BUY HOUSES", path: "/all-properties", icon: <FaBuilding /> },
-    { name: "SOLD HOUSES", path: "/sold", icon: <FaCheckCircle /> },
+    { name: "POST PROPERTIES", path: "/post", icon: <FaCheckCircle /> },
     { name: "ABOUT", path: "/about", icon: <FaInfoCircle /> },
     { name: "CONTACT", path: "/contact", icon: <FaEnvelope /> }
   ];

@@ -45,7 +45,6 @@ const SellerPropertyForm = () => {
   const ownershipTypes = ["Freehold", "Leasehold", "Co-operative Society", "Power of Attorney"];
   const possessionStatuses = ["Ready to Move", "Under Construction", "New Launch"];
   
-  // Updated amenities options based on your schema
   const amenityOptions = [
     'Parking', 
     'Swimming Pool', 
@@ -106,7 +105,6 @@ const SellerPropertyForm = () => {
       }));
     }
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
@@ -162,7 +160,6 @@ const SellerPropertyForm = () => {
 
       if (res.ok) {
         alert("Property added successfully!");
-        // Reset form after successful submission
         setFormData({
           title: "",
           description: "",
@@ -224,12 +221,17 @@ const SellerPropertyForm = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-3xl font-bold mb-6 text-center text-blue-800">Add New Property</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-yellow-600 border-b-2 border-yellow-500 pb-3">
+        List Your Property
+      </h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Basic Information */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Basic Information</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">1</span>
+            Basic Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title*</label>
@@ -238,7 +240,7 @@ const SellerPropertyForm = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="e.g. Beautiful 3BHK Apartment in Prime Location"
               />
               {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
@@ -251,7 +253,7 @@ const SellerPropertyForm = () => {
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="Detailed description of your property"
               />
               {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
@@ -263,7 +265,7 @@ const SellerPropertyForm = () => {
                 name="property_type"
                 value={formData.property_type}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.property_type ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.property_type ? 'border-red-500' : 'border-gray-300'}`}
               >
                 <option value="">Select Property Type</option>
                 {propertyTypes.map(type => (
@@ -280,7 +282,7 @@ const SellerPropertyForm = () => {
                 value={formData.property_subtype}
                 onChange={handleChange}
                 disabled={!formData.property_type}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.property_subtype ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.property_subtype ? 'border-red-500' : 'border-gray-300'}`}
               >
                 <option value="">Select Subtype</option>
                 {getSubtypeOptions().map(subtype => (
@@ -293,8 +295,11 @@ const SellerPropertyForm = () => {
         </div>
 
         {/* Section 2: Property Details */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Property Details</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">2</span>
+            Property Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms*</label>
@@ -304,7 +309,7 @@ const SellerPropertyForm = () => {
                 value={formData.bedrooms}
                 onChange={handleChange}
                 min="0"
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.bedrooms ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.bedrooms ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.bedrooms && <p className="mt-1 text-sm text-red-600">{errors.bedrooms}</p>}
             </div>
@@ -317,7 +322,7 @@ const SellerPropertyForm = () => {
                 value={formData.bathrooms}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -329,7 +334,7 @@ const SellerPropertyForm = () => {
                 value={formData.balconies}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -341,7 +346,7 @@ const SellerPropertyForm = () => {
                 value={formData.floor_number}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -353,7 +358,7 @@ const SellerPropertyForm = () => {
                 value={formData.total_floors}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -365,7 +370,7 @@ const SellerPropertyForm = () => {
                 value={formData.price}
                 onChange={handleChange}
                 min="0"
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
             </div>
@@ -378,7 +383,7 @@ const SellerPropertyForm = () => {
                 value={formData.built_up_area}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -390,7 +395,7 @@ const SellerPropertyForm = () => {
                 value={formData.carpet_area}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -402,7 +407,7 @@ const SellerPropertyForm = () => {
                 value={formData.plot_area}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -412,7 +417,7 @@ const SellerPropertyForm = () => {
                 name="facing"
                 value={formData.facing}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="">Select Facing</option>
                 {facingOptions.map(option => (
@@ -429,7 +434,7 @@ const SellerPropertyForm = () => {
                 value={formData.age}
                 onChange={handleChange}
                 min="0"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -439,7 +444,7 @@ const SellerPropertyForm = () => {
                 name="ownership_type"
                 value={formData.ownership_type}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="">Select Ownership Type</option>
                 {ownershipTypes.map(type => (
@@ -454,7 +459,7 @@ const SellerPropertyForm = () => {
                 name="possession_status"
                 value={formData.possession_status}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               >
                 <option value="">Select Possession Status</option>
                 {possessionStatuses.map(status => (
@@ -466,8 +471,11 @@ const SellerPropertyForm = () => {
         </div>
 
         {/* Section 3: Location Details */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Location Details</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">3</span>
+            Location Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
@@ -476,7 +484,7 @@ const SellerPropertyForm = () => {
                 name="street"
                 value={formData.street}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                 placeholder="e.g. 123 Main Street"
               />
             </div>
@@ -488,7 +496,7 @@ const SellerPropertyForm = () => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
             </div>
@@ -500,7 +508,7 @@ const SellerPropertyForm = () => {
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.state ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.state ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
             </div>
@@ -512,7 +520,7 @@ const SellerPropertyForm = () => {
                 name="postal_code"
                 value={formData.postal_code}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
               />
             </div>
             
@@ -523,7 +531,7 @@ const SellerPropertyForm = () => {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                 disabled
               />
             </div>
@@ -535,7 +543,7 @@ const SellerPropertyForm = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                 placeholder="e.g. Near Central Park"
               />
             </div>
@@ -547,7 +555,7 @@ const SellerPropertyForm = () => {
                 name="latitude"
                 value={formData.latitude}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                 placeholder="e.g. 28.6139"
               />
             </div>
@@ -559,7 +567,7 @@ const SellerPropertyForm = () => {
                 name="longitude"
                 value={formData.longitude}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                 placeholder="e.g. 77.2090"
               />
             </div>
@@ -567,8 +575,11 @@ const SellerPropertyForm = () => {
         </div>
 
         {/* Section 4: Features & Amenities */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Features & Amenities</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">4</span>
+            Features & Amenities
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Select Amenities</label>
@@ -580,7 +591,7 @@ const SellerPropertyForm = () => {
                       id={`amenity-${amenity}`}
                       checked={formData.amenities.includes(amenity)}
                       onChange={() => handleAmenityChange(amenity)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`amenity-${amenity}`} className="ml-2 text-sm text-gray-700">
                       {amenity}
@@ -598,7 +609,7 @@ const SellerPropertyForm = () => {
                   name="approved_by"
                   value={formData.approved_by.join(", ")}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
                   placeholder="e.g. RERA, Municipal Corporation"
                 />
               </div>
@@ -611,13 +622,13 @@ const SellerPropertyForm = () => {
                       {formData.amenities.map((amenity, index) => (
                         <span 
                           key={index} 
-                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"
                         >
                           {amenity}
                           <button
                             type="button"
                             onClick={() => handleAmenityChange(amenity)}
-                            className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-blue-400 hover:bg-blue-200 hover:text-blue-500"
+                            className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-yellow-400 hover:bg-yellow-200 hover:text-yellow-500"
                           >
                             ×
                           </button>
@@ -634,8 +645,11 @@ const SellerPropertyForm = () => {
         </div>
 
         {/* Section 5: Contact Information */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Contact Information</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">5</span>
+            Contact Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Contact Name*</label>
@@ -644,7 +658,7 @@ const SellerPropertyForm = () => {
                 name="contact_name"
                 value={formData.contact_name}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_name ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.contact_name ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.contact_name && <p className="mt-1 text-sm text-red-600">{errors.contact_name}</p>}
             </div>
@@ -656,7 +670,7 @@ const SellerPropertyForm = () => {
                 name="contact_phone"
                 value={formData.contact_phone}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_phone ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.contact_phone ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.contact_phone && <p className="mt-1 text-sm text-red-600">{errors.contact_phone}</p>}
             </div>
@@ -668,7 +682,7 @@ const SellerPropertyForm = () => {
                 name="contact_email"
                 value={formData.contact_email}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.contact_email ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-500 ${errors.contact_email ? 'border-red-500' : 'border-gray-300'}`}
               />
               {errors.contact_email && <p className="mt-1 text-sm text-red-600">{errors.contact_email}</p>}
             </div>
@@ -676,8 +690,11 @@ const SellerPropertyForm = () => {
         </div>
 
         {/* Section 6: Images Upload */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-blue-700">Property Images</h3>
+        <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-100">
+          <h3 className="text-xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">
+            <span className="bg-yellow-500 text-white px-3 py-1 rounded-full mr-2">6</span>
+            Property Images
+          </h3>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Upload Images (1-20)*</label>
             <div className={`border-2 border-dashed rounded-lg p-6 text-center ${errors.images ? 'border-red-500' : 'border-gray-300'}`}>
@@ -740,7 +757,7 @@ const SellerPropertyForm = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`px-8 py-3 bg-yellow-600 text-white font-bold rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? (
               <>

@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import Navbar from "./Components/Header/Header";
 import Footer from "./Components/Footer/Footer";
-import PostSellerProperty from "./Components/PostProperty/PostProperty";
 import VerifiedSellersCart from "./Components/agents/agent";
 
 // Lazy-loaded components
@@ -25,6 +24,8 @@ import AllProperties from "./page/allProperty";
 import ContactPage from "./page/contect-Us/contact";
 import AboutPage from "./page/about-Us/about";
 import SimpleHomePanel from "./Components/PropertyDetails.jsx";
+import PropertyPostingFlow from "./page/PostProperties/postProperties.jsx";
+import ProfileVerificationFlow from "./page/PostProperties/postProperties.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -44,6 +45,7 @@ function App() {
           <Route path="/all-properties" element={<><Navbar /><AllProperties /><Footer /></>} />
           <Route path="/contact" element={<><Navbar /><ContactPage /><Footer /></>} />
           <Route path="/about" element={<><Navbar /><AboutPage /><Footer /></>} />
+          <Route path="/post" element={<><Navbar /><ProfileVerificationFlow /><Footer /></>} />
           <Route
             path="/property/:id"
             element={ <><SimpleHomePanel /></>}/>
@@ -52,7 +54,7 @@ function App() {
           <Route path="/UnverifiedSellers" element={<AdminUnVerifySeller />} />
           <Route path="/VerifiedSellers" element={<VerifiedSellers />} />
           <Route path="/GetAllProperties" element={<GetAllProperties />} />
-          <Route path="/seller" element={<SellerPropertyForm />} />
+          <Route path="/post-property-form" element={<><Navbar /><SellerPropertyForm /><Footer /></>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/user/reset-password/:token" element={<ResetPassword />} />
         </Routes>

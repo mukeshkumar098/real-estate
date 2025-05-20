@@ -1,16 +1,17 @@
+import axios from 'axios';
 import { useState } from 'react';
 import { FaShare, FaHeart, FaCheck, FaWhatsapp, FaCalendarAlt, FaClock } from 'react-icons/fa';
 
-export default function PropertySidebar({ property }) {
+export default function PropertySidebar({ property ,id}) {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [isLiked, setIsLiked] = useState(false);
   const [isScheduled, setIsScheduled] = useState(false);
   const [showShareOption, setShowShareOption] = useState(false);
-  
+
   // Format price with commas (e.g., 9,500,000)
   const formattedPrice = property.price?.toLocaleString() || '0';
-  
+
   // Calculate price per sqft
   const pricePerSqft = Math.round((property.price || 0) / (property.area?.built_up || 1));
 
@@ -21,44 +22,44 @@ export default function PropertySidebar({ property }) {
     const propertyLocation = property.location || 'Unknown Location';
     const propertyArea = `${property.area?.built_up || 'N/A'} sqft`;
     const propertyUrl = window.location.href;
-  
+
     const shareText = `🏠 ${propertyTitle}\n📍 Location: ${propertyLocation}\n💰 Price: ${propertyPrice}\n📏 Area: ${propertyArea}`;
-  
+
     if (navigator.share) {
       navigator.share({
         title: propertyTitle,
         text: shareText,
         url: propertyUrl,
       })
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.error('Error sharing:', error));
+        .then(() => console.log('Shared successfully'))
+        .catch((error) => console.error('Error sharing:', error));
     } else {
       alert("Sharing is not supported on this browser. Try copying the URL.");
     }
-  
+
     setShowShareOption(false);
   };
-  
-  
+
+
   const handleScheduleVisit = () => {
     // Validate inputs
     if (!selectedDate || !selectedTime) {
       alert("Please select both date and time");
       return;
     }
-    
+
     // In a real application, you would send this data to your backend
     const visitData = {
       propertyId: property._id,
       date: selectedDate,
       time: selectedTime
     };
-    
+
     console.log('Scheduling visit:', visitData);
-    
+
     // Show success message
     setIsScheduled(true);
-    
+
     // Reset form after 3 seconds and hide success message
     setTimeout(() => {
       setSelectedDate('');
@@ -66,29 +67,58 @@ export default function PropertySidebar({ property }) {
       setIsScheduled(false);
     }, 3000);
   };
-  
+
   const handleLikeToggle = () => {
     setIsLiked(!isLiked);
     // In a real app, you would update this on the server
     console.log(`Property ${isLiked ? 'unliked' : 'liked'}: ${property._id}`);
   };
-  
+
   const shareOnWhatsApp = () => {
     const propertyTitle = encodeURIComponent(property.title || 'Real Estate Property');
     const propertyPrice = encodeURIComponent(`₹${formattedPrice}`);
     const propertyLocation = encodeURIComponent(property.location || 'Unknown Location');
     const propertyArea = encodeURIComponent(`${property.area?.built_up || 'N/A'} sqft`);
     const propertyUrl = encodeURIComponent(window.location.href); // current page URL
-  
+
     const message = `🏠 *${propertyTitle}*\n📍 Location: ${propertyLocation}\n💰 Price: ${propertyPrice}\n📏 Area: ${propertyArea}\n🔗 View: ${propertyUrl}`;
-  
+
     window.open(`https://wa.me/?text=${message}`, '_blank');
     setShowShareOption(false);
   };
-  
+
   // Calculate minimum date (today)
   const today = new Date().toISOString().split('T')[0];
-  
+
+
+  const likeProperty = async () => {
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BACK_END_URL}/properties/like/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // if (res) {
+      //   setIsLiked(true);
+      // }
+
+      console.log(res.data);
+    } catch (err) {
+      console.error("Error liking property:", err.response?.data || err.message);
+    }
+  };
+
+
+  console.log(id)
+
   return (
     <div className="lg:w-1/3 w-full">
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 sticky top-24 border border-gray-100">
@@ -101,19 +131,22 @@ export default function PropertySidebar({ property }) {
             </p>
           </div>
           <div className="flex space-x-3">
-            <button 
-            onClick={handleNativeShare}
+            <button
+              onClick={handleNativeShare}
               className="p-3 rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 border border-gray-200"
-              
+
             >
-              <FaShare    className={`text-gray-600 ${showShareOption ? 'text-blue-500' : ''}`} />
+              <FaShare className={`text-gray-600 ${showShareOption ? 'text-blue-500' : ''}`} />
             </button>
-            
-            <button 
+
+            <button
               className="p-3 rounded-full cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-200 border border-gray-200"
               onClick={handleLikeToggle}
             >
-              <FaHeart className={isLiked ? "text-red-500" : "text-gray-600"} />
+              <FaHeart
+                onClick={likeProperty}
+                className={isLiked ? "text-red-500 cursor-pointer" : "text-gray-600 cursor-pointer"}
+              />
             </button>
           </div>
         </div>
@@ -122,7 +155,7 @@ export default function PropertySidebar({ property }) {
         {showShareOption && (
           <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
             <p className="text-sm font-medium text-gray-700 mb-3">Share this property</p>
-            <button 
+            <button
               onClick={shareOnWhatsApp}
               className="flex items-center w-full text-left p-3 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
@@ -147,7 +180,7 @@ export default function PropertySidebar({ property }) {
         {/* Schedule visit section */}
         <div className="bg-yellow-50 p-5 rounded-xl mb-6 border border-blue-100">
           <h4 className="text-lg font-semibold text-gray-800 mb-4">Schedule a Visit</h4>
-          
+
           {isScheduled ? (
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <div className="flex items-center text-green-700">
@@ -176,7 +209,7 @@ export default function PropertySidebar({ property }) {
                   />
                 </div>
               </div>
-              
+
               <div className="mb-5 relative">
                 <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
                 <div className="relative">
@@ -192,7 +225,7 @@ export default function PropertySidebar({ property }) {
                   />
                 </div>
               </div>
-              
+
               <button
                 onClick={handleScheduleVisit}
                 className="w-full bg-yellow-500 text-white p-3 rounded-lg hover:bg-yellow-600 cursor-pointer transition duration-200 font-medium flex items-center justify-center"
@@ -204,13 +237,13 @@ export default function PropertySidebar({ property }) {
         </div>
 
         {/* Contact immediate section */}
-        <button 
+        <button
           onClick={shareOnWhatsApp}
           className="w-full flex items-center justify-center bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 transition-all duration-200 mb-3 font-medium"
         >
           <FaWhatsapp className="mr-2 text-lg" /> Chat on WhatsApp
         </button>
-        
+
         <p className="text-xs text-center text-gray-500">
           Contact agent for availability and more details
         </p>

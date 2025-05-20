@@ -20,6 +20,7 @@ import { IoIosResize } from "react-icons/io";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import PropertySidebar from "./Schedul";
+import axios from "axios";
 
 const geocodeAddress = async (address) => {
   const response = await fetch(
@@ -60,9 +61,37 @@ const PropertyDetails = () => {
     }));
   };
 
-  useEffect(() => {
+   useEffect(() => {
+    // Dispatch property data fetch
     dispatch(getPropertyById(id));
+
+    // Function to increment view count
+const incrementView = async () => {
+  try {
+    const token = localStorage.getItem("authToken"); // or sessionStorage, depending on where you store it
+
+    await axios.put(
+      `${import.meta.env.VITE_BACK_END_URL}/properties/views/${id}`,
+      {},
+      {
+        withCredentials: true, // If needed (e.g., cookie-based sessions)
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error incrementing view count:", error);
+  }
+};
+
+    // Call the function
+    incrementView();
   }, [dispatch, id]);
+
+
+
+
 
   useEffect(() => {
     if (property?.address) {
@@ -145,6 +174,7 @@ const PropertyDetails = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2">
       {/* Title and Location */}
+       <p className="text-sm text-gray-600 mb-2">👁️ {property.views} views</p>
       <div className="mb-8">
         <span className="text-sm font-medium text-yellow-500 px-3 py-1 bg-yellow-50 rounded-full">
           {(property.status || "For Sale").toUpperCase()}
@@ -406,7 +436,7 @@ const PropertyDetails = () => {
         </div>
 
         {/* Side Panel */}
-        <PropertySidebar property={property}/>
+        <PropertySidebar property={property} id={id}/>
       </div>
     </div>
   );
