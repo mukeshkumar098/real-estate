@@ -439,10 +439,10 @@ const UserProfile = () => {
               />
             </div>
              <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">address</label>
               <input
                 type="text"
-                name="specialization"
+                name="address"
                 value={formData.address}
                 onChange={handleChange}
                 className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
@@ -503,6 +503,10 @@ const UserProfile = () => {
           <div className="p-4 bg-yellow-50 rounded-lg">
             <p className="text-sm text-gray-500">Specialization</p>
             <p className="font-medium text-gray-800">{user.specialization || "Not set"}</p>
+          </div>
+           <div className="p-4 bg-yellow-50 rounded-lg">
+            <p className="text-sm text-gray-500">Address</p>
+            <p className="font-medium text-gray-800">{user.address || "Not set"}</p>
           </div>
           {user.bio && (
             <div className="p-4 bg-yellow-50 rounded-lg sm:col-span-2">
