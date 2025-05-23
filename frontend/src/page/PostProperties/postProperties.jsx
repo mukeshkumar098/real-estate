@@ -457,7 +457,7 @@ export default function ProfileVerificationFlow() {
               )}
 
               {/* Phone verification - Step 1 */}
-              {step === 1 && (
+              {/* {step === 1 && (
                 <>
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">Verify your phone number</h2>
                   <p className="text-gray-600 mb-6">
@@ -501,10 +501,10 @@ export default function ProfileVerificationFlow() {
                     </button>
                   </div>
                 </>
-              )}
+              )} */}
 
               {/* Phone OTP verification - Step 2 */}
-              {step === 2 && (
+              {/* {step === 2 && (
                 <>
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">Enter phone verification code</h2>
                   <p className="text-gray-600 mb-6">
@@ -561,7 +561,7 @@ export default function ProfileVerificationFlow() {
                     </button>
                   </div>
                 </>
-              )}
+              )} */}
 
               {/* Email submission - Step 3 */}
               {step === 3 && (
