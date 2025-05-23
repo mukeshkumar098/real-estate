@@ -23,9 +23,9 @@ const RealEstateAdminDashboard = () => {
     setLoadingCounts(true);
     setErrorCounts(null);
     try {
-      const verified = await axios.get("/api/verified-sellers");
-      const unverified = await axios.get("/api/unverified-sellers");
-      const properties = await axios.get("/api/properties");
+      const verified = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
+      const unverified = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getUnverifiedSellers`);
+      const properties = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/properties/getProperties`);
 
       setVerifiedCount(verified.data.length);
       setUnverifiedCount(unverified.data.length);
