@@ -26,7 +26,7 @@ const Login = () => {
 
       const role = res?.payload?.user?.role || res?.user?.role;
       if (role === "admin") {
-        navigate("/admin");
+        navigate("/admin-dashboard");
       } else if (role === "buyer") {
         navigate("/");
       } else if (role === "seller") {
