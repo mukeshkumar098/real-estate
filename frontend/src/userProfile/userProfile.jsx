@@ -12,7 +12,8 @@ const UserProfile = () => {
     bio: "",
     phoneNumber: "",
     specialization: "",
-    profilePicture: ""
+    profilePicture: "",
+    address:""
   });
   
   // UI states
@@ -433,6 +434,16 @@ const UserProfile = () => {
                 type="text"
                 name="specialization"
                 value={formData.specialization}
+                onChange={handleChange}
+                className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
+              />
+            </div>
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+              <input
+                type="text"
+                name="specialization"
+                value={formData.address}
                 onChange={handleChange}
                 className="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
               />
