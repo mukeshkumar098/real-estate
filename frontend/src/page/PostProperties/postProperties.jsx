@@ -6,7 +6,7 @@ import { ListingPermission } from "./listinngPermission";
 import axios from "axios";
 
 export default function ProfileVerificationFlow() {
-  const [step, setStep] = useState(0); // Start with role selection
+  const [step, setStep] = useState(3); // Start with role selection
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneOtp, setPhoneOtp] = useState(["", "", "", "", "", ""]);
   const [email, setEmail] = useState("");
