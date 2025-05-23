@@ -1,109 +1,177 @@
-import { useEffect, useState } from 'react';
-import { Home, Users, Settings, Building, Menu, X, Bell } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import AdminNavBar from './Header';
+import React, { useEffect, useState } from "react";
+import { FaSignOutAlt, FaBars } from "react-icons/fa";
+import { Home, Building, Users, Settings, UserX } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import VerifiedSellers from "./Seller";
+import GetAllProperties from "./GetAllProperty";
+import AdminUnVerifySeller from "./GetAllUnverifiedSeller";
+import StatCard from "./setCart";
 
-
-
-export default function RealEstateAdminDashboard() {
+const RealEstateAdminDashboard = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("Dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [unverifiedCount, setUnverifiedCount] = useState(0);
+
   const [verifiedCount, setVerifiedCount] = useState(0);
-  const [allPropertiesCount,setAllPropertiesCount]=useState(0)
-  const navigate=useNavigate()
+  const [unverifiedCount, setUnverifiedCount] = useState(0);
+  const [allPropertiesCount, setAllPropertiesCount] = useState(0);
+  const [loadingCounts, setLoadingCounts] = useState(true);
+  const [errorCounts, setErrorCounts] = useState(null);
 
-  const fetchUnverifiedSellersCount = async () => {
+  const fetchCounts = async () => {
+    setLoadingCounts(true);
+    setErrorCounts(null);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getUnverifiedSellers`);
-      setUnverifiedCount(response.data.length);
+      const verified = await axios.get("/api/verified-sellers");
+      const unverified = await axios.get("/api/unverified-sellers");
+      const properties = await axios.get("/api/properties");
+
+      setVerifiedCount(verified.data.length);
+      setUnverifiedCount(unverified.data.length);
+      setAllPropertiesCount(properties.data.length);
     } catch (error) {
-      console.error('Failed to fetch unverified sellers count:', error);
+      setErrorCounts("Failed to fetch counts");
+      console.error(error);
+    } finally {
+      setLoadingCounts(false);
     }
   };
 
-  const fetchVerifiedSellersCount = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
-      setVerifiedCount(response.data.length);
-    } catch (error) {
-      console.error('Failed to fetch verified sellers count:', error);
-    }
-  };
-  const allProperties = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/properties/getProperties`);
-      setAllPropertiesCount(response.data.length);
-    } catch (error) {
-      console.error('Failed to fetch verified sellers count:', error);
-    }
-  };
   useEffect(() => {
-    fetchUnverifiedSellersCount();
-    fetchVerifiedSellersCount();
-    allProperties()
+    fetchCounts();
   }, []);
 
+  const menuItems = [
+    { label: "Dashboard", icon: <Home size={20} />, tab: "Dashboard" },
+    { label: "Properties", icon: <Building size={20} />, tab: "Properties" },
+    { label: "Agents", icon: <Users size={20} />, tab: "Agents" },
+    { label: "Unverified Sellers", icon: <UserX size={20} />, tab: "UnverifiedSellers" },
+    { label: "Settings", icon: <Settings size={20} />, tab: "Settings" },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/login");
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100 relative">
+    <div className="flex flex-col lg:flex-row h-screen">
+      {/* Mobile Header */}
+     {/* Mobile Header */}
+<div className="lg:hidden flex items-center justify-between bg-white px-4 py-3 shadow-md sticky top-0 z-20">
+  <h1 className="text-xl font-bold text-yellow-500">Admin Panel</h1>
+  <button
+    className="text-yellow-500 focus:outline-none"
+    onClick={() => setSidebarOpen(!sidebarOpen)}
+  >
+    <FaBars size={20} />
+  </button>
+</div>
+
+{/* Desktop Header */}
+
+
+
       {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 bg-white w-64 p-5 border-r shadow-lg z-50 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-72'
-        } transition-transform duration-300 md:translate-x-0 md:relative md:w-72`}
+      <aside
+        className={`bg-white w-full lg:w-64 border-r transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:static top-0 left-0 h-full z-50`}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-extrabold">Admin Panel</h1>
-          <button className="md:hidden" onClick={() => setSidebarOpen(false)}>
-            <X size={24} />
-          </button>
+        <div className="p-6 border-b">
+          <h1 className="text-2xl font-bold text-yellow-500 hidden lg:block">Admin Panel</h1>
         </div>
-        <ul className="space-y-4">
-          <li className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer">
-            <Home size={24} /> Dashboard
-          </li>
-        <li onClick={()=>navigate("/GetAllProperties")} className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer">
-            <Building size={24} /> Properties
-          </li>
-        
-          <li onClick={()=>navigate("/VerifiedSellers")}  className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer">
-            <Users size={24} /> Agents
-          </li>
-          <li className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer">
-            <Settings size={24} /> Settings
-          </li>
+        <ul className="space-y-2 px-4 pt-2">
+          {menuItems.map((item, idx) => (
+            <li
+              key={idx}
+              onClick={() => {
+                setActiveTab(item.tab);
+                setSidebarOpen(false);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setActiveTab(item.tab);
+                  setSidebarOpen(false);
+                }
+              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition ${
+                activeTab === item.tab
+                  ? "bg-yellow-100 text-yellow-600 font-semibold border-l-4 border-yellow-400"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </li>
+          ))}
         </ul>
-      </div>
+      </aside>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Navbar */}
-       <AdminNavBar/>
-
-
-        {/* Dashboard Content */}
-        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link to={"/GetAllProperties"}> <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center hover:shadow-lg transition">
-            <h3 className="text-lg font-medium">Total Properties</h3>
-            <p className="text-4xl font-bold mt-2">{allPropertiesCount}</p>
+        {/* Header */}
+        <header className="hidden lg:flex justify-end items-center px-6 py-4 border-b bg-white shadow-sm">
+          <div className="flex items-center space-x-4">
+            <span className="font-medium text-gray-700">Admin</span>
+            <button
+              onClick={handleLogout}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded flex items-center gap-1"
+            >
+              <FaSignOutAlt />
+              Logout
+            </button>
           </div>
-          </Link> 
+        </header>
 
-          <Link to="/VerifiedSellers" className="block">
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center hover:shadow-lg transition cursor-pointer">
-              <h3 className="text-lg font-medium">Total Agents</h3>
-              <p className="text-4xl font-bold mt-2">{verifiedCount}</p>
-            </div>
-          </Link>
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
+          {activeTab === "Dashboard" && (
+            <>
+              {loadingCounts && (
+                <p className="text-center text-gray-500">Loading stats...</p>
+              )}
+              {errorCounts && (
+                <p className="text-center text-red-600">{errorCounts}</p>
+              )}
+              {!loadingCounts && !errorCounts && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <StatCard
+                    label="Total Properties"
+                    count={allPropertiesCount}
+                    onClick={() => setActiveTab("Properties")}
+                  />
+                  <StatCard
+                    label="Total Agents"
+                    count={verifiedCount}
+                    onClick={() => setActiveTab("Agents")}
+                  />
+                  <StatCard
+                    label="Pending Approvals"
+                    count={unverifiedCount}
+                    onClick={() => setActiveTab("UnverifiedSellers")}
+                  />
+                </div>
+              )}
+            </>
+          )}
 
-          <Link to="/UnverifiedSellers" className="block">
-            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center hover:shadow-lg transition cursor-pointer">
-              <h3 className="text-lg font-medium">Pending Approvals</h3>
-              <p className="text-4xl font-bold mt-2">{unverifiedCount}</p>
+          {activeTab === "Properties" && <GetAllProperties />}
+          {activeTab === "Agents" && <VerifiedSellers />}
+          {activeTab === "UnverifiedSellers" && <AdminUnVerifySeller />}
+          {activeTab === "Settings" && (
+            <div>
+              <h2 className="text-xl font-bold">Settings</h2>
+              <p className="text-gray-600 mt-2">Admin configuration goes here.</p>
             </div>
-          </Link>
-        </div>
+          )}
+        </main>
       </div>
     </div>
   );
-}
+};
+
+export default RealEstateAdminDashboard;

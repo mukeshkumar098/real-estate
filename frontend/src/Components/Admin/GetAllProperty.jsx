@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import AdminNavBar from './Header';
+import { Home } from 'lucide-react';
 
 export default function GetAllProperties() {
   const [properties, setProperties] = useState([]);
@@ -22,46 +22,57 @@ export default function GetAllProperties() {
     fetchProperties();
   }, []);
 
-  if (loading) return <div className="text-center mt-10 text-lg">Loading...</div>;
+  if (loading) return <div className="text-center mt-10 text-lg text-gray-600">Loading...</div>;
   if (error) return <div className="text-center text-red-600 mt-10">Error: {error}</div>;
 
   return (
-    <>
-      <AdminNavBar />
-      <div className="p-6 bg-gray-50 min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">All Properties</h1>
-        {properties.length === 0 ? (
-          <p className="text-gray-600">No properties found.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {properties.map((property) => (
-              <div
-                key={property._id}
-                className="bg-white p-6 rounded-lg shadow-lg transform transition-transform hover:-translate-y-2 hover:shadow-xl duration-300"
-              >
-                <img
-                  src={property.images[0] || 'https://via.placeholder.com/300'}
-                  alt={property.title}
-                  className="w-full h-56 object-cover rounded-md mb-4"
-                />
-                <h2 className="text-xl font-semibold text-gray-800">{property.title}</h2>
-                <p className="text-gray-600">{property.location}</p>
-                <div className="flex justify-between items-center mt-4">
-                  <p className="text-lg font-medium text-blue-600">${property.price}</p>
-                  <span
-                    className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                      property.status === 'Sold' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
-                    }`}
-                  >
-                    {property.status}
-                  </span>
-                </div>
-                <p className="text-gray-500 mt-2">Type: {property.property_type}</p>
-              </div>
-            ))}
-          </div>
-        )}
+    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-yellow-500 flex items-center gap-2">
+          <Home size={28} className="text-yellow-500" />
+          All Properties
+        </h1>
+        <span className="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full font-medium text-sm shadow">
+          Total: {properties.length}
+        </span>
       </div>
-    </>
+
+      {properties.length === 0 ? (
+        <p className="text-gray-600 text-lg">No properties found.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {properties.map((property) => (
+            <div
+              key={property._id}
+              className="bg-white p-5 rounded-2xl shadow-md hover:shadow-xl transition duration-300 border border-gray-100"
+            >
+              <img
+                src={property.images?.[0] || 'https://via.placeholder.com/300'}
+                alt={property.title}
+                className="w-full h-48 object-cover rounded-md mb-4"
+              />
+              <h2 className="text-lg font-semibold text-gray-800 truncate">{property.title}</h2>
+              <p className="text-gray-500 text-sm truncate">{property.location}</p>
+
+              <div className="flex justify-between items-center mt-3">
+                <p className="text-blue-600 font-semibold text-lg">${property.price}</p>
+                <span
+                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                    property.status === 'Sold'
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-green-100 text-green-600'
+                  }`}
+                >
+                  {property.status}
+                </span>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-2">Type: {property.property_type}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

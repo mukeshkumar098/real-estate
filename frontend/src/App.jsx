@@ -9,7 +9,7 @@ const Home = lazy(() => import("./Components/Home/Home"));
 const Register = lazy(() => import("./Components/Register/Register"));
 const Login = lazy(() => import("./Components/Login/Login"));
 const PropertyDetails = lazy(() => import("./Components/PropertyDetails.jsx/PropertyDetails"));
-const RealEstateAdminDashboard = lazy(() => import("./Components/Admin/Admin"));
+
 const VerifiedSellers = lazy(() => import("./Components/Admin/Seller"));
 const GetAllProperties = lazy(() => import("./Components/Admin/GetAllProperty"));
 const AdminUnVerifySeller = lazy(() => import("./Components/Admin/GetAllUnverifiedSeller"));
@@ -19,13 +19,13 @@ const ResetPassword = lazy(() => import("./Components/Login/ResetPassword"));
 const UserProfile = lazy(() => import("./userProfile/userProfile"));
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { FaSpinner } from "react-icons/fa";
-import SellerPropertyForm from "./Components/PostProperty/PostProperty";
 import AllProperties from "./page/allProperty";
 import ContactPage from "./page/contect-Us/contact";
 import AboutPage from "./page/about-Us/about";
 import SimpleHomePanel from "./Components/PropertyDetails.jsx";
-import PropertyPostingFlow from "./page/PostProperties/postProperties.jsx";
 import ProfileVerificationFlow from "./page/PostProperties/postProperties.jsx";
+import SellerPropertyForm from "./page/PostProperties/PostPropertyForm.jsx";
+import RealEstateAdminDashboard from "./Components/Admin/Admin.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -50,10 +50,12 @@ function App() {
             path="/property/:id"
             element={ <><SimpleHomePanel /></>}/>
           <Route path="/agent" element={<><Navbar /><VerifiedSellersCart /><Footer /></>} />
-          <Route path="/admin" element={<RealEstateAdminDashboard />} />
-          <Route path="/UnverifiedSellers" element={<AdminUnVerifySeller />} />
-          <Route path="/VerifiedSellers" element={<VerifiedSellers />} />
-          <Route path="/GetAllProperties" element={<GetAllProperties />} />
+
+
+      <Route path="/admin-dashboard" element={<RealEstateAdminDashboard />} />
+   <Route path="/admin-dashboard/properties" element={<AdminUnVerifySeller />} />
+<Route path="/admin-dashboard" element={<VerifiedSellers />} />
+<Route path="/GetAllProperties/properties" element={<GetAllProperties />} />
           <Route path="/post-property-form" element={<><Navbar /><SellerPropertyForm /><Footer /></>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/user/reset-password/:token" element={<ResetPassword />} />

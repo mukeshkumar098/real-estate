@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import AdminNavBar from './Header';
-
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { UserCheck } from "lucide-react";
 
 export default function VerifiedSellers() {
   const [sellers, setSellers] = useState([]);
@@ -10,7 +9,9 @@ export default function VerifiedSellers() {
 
   const fetchVerifiedSellers = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`
+      );
       setSellers(response.data);
     } catch (err) {
       setError(err.message);
@@ -23,33 +24,64 @@ export default function VerifiedSellers() {
     fetchVerifiedSellers();
   }, []);
 
-  if (loading) return <div className="text-center mt-10 text-lg text-gray-700">Loading...</div>;
-  if (error) return <div className="text-center text-red-600 mt-10">Error: {error}</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-10 text-lg text-gray-700">Loading...</div>
+    );
+  if (error)
+    return (
+      <div className="text-center text-red-600 mt-10">Error: {error}</div>
+    );
 
   return (
-    <>
-      <AdminNavBar/>
-     <div className="px-15 py-4 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-extrabold mb-8 text-gray-800">Verified Sellers (Agents)</h1>
+    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-yellow-500">
+          Verified Sellers
+        </h1>
+        <span className="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full font-medium text-sm shadow">
+          Total: {sellers.length}
+        </span>
+      </div>
+
       {sellers.length === 0 ? (
         <p className="text-gray-600 text-lg">No verified sellers found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {sellers.map((seller) => (
             <div
               key={seller._id}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-6 border border-gray-100"
             >
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">{seller.name}</h2>
-              <p className="text-gray-600 text-lg">{seller.email}</p>
-              <p className="text-gray-500 mt-2">Role: {seller.role}</p>
-              <p className="text-green-600 font-medium mt-2">✔ Verified</p>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="bg-yellow-500 text-white rounded-full p-3">
+                  <UserCheck size={24} />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold text-gray-800 truncate">
+                    {seller.name}
+                  </h2>
+                  <p className="text-sm text-gray-500 break-words truncate max-w-[180px]">
+                    {seller.email}
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-sm text-gray-600">
+                  Role:{" "}
+                  <span className="font-medium text-gray-800">
+                    {seller.role}
+                  </span>
+                </span>
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                  ✔ Verified
+                </span>
+              </div>
             </div>
           ))}
         </div>
       )}
     </div>
-    </>
-   
   );
 }

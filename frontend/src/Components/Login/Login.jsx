@@ -30,7 +30,7 @@ const Login = () => {
       } else if (role === "buyer") {
         navigate("/");
       } else if (role === "seller") {
-        navigate("/seller");
+        navigate("/");
       }
     } catch (error) {
       alert("Invalid credentials. Please try again.");
