@@ -174,15 +174,16 @@ const incrementView = async () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2">
       {/* Title and Location */}
-       <p className="text-sm text-gray-600 mb-2">👁️ {property.views} views</p>
+      
       <div className="mb-8">
         <span className="text-sm font-medium text-yellow-500 px-3 py-1 bg-yellow-50 rounded-full">
           {(property.status || "For Sale").toUpperCase()}
         </span>
         <h1 className="text-3xl font-bold text-gray-900 mt-2 mb-1">{property.title}</h1>
-        <div className="flex items-center text-gray-600">
+        <div className="flex items-center   text-gray-600">
           <FaMapMarkerAlt className="mr-2 text-yellow-500" />
           <span>{property.location}</span>
+           <p className=" text-gray-600 ml-5">👁️ {property.views} views</p>
         </div>
       </div>
 

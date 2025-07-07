@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaHome, FaChevronRight, FaArrowLeft } from "react-icons/fa";
 import PropertyDetails from "./PropertyDetails";
 import Navbar from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 const SimpleHomePanel = ({ title }) => {
     return (
@@ -35,7 +36,8 @@ const SimpleHomePanel = ({ title }) => {
             </div>
               <PropertyDetails />
             </div>
-          
+            
+          <Footer />
 
         </>
     );

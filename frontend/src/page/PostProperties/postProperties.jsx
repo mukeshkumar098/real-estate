@@ -6,7 +6,7 @@ import { ListingPermission } from "./listinngPermission";
 import axios from "axios";
 
 export default function ProfileVerificationFlow() {
-  const [step, setStep] = useState(3); // Start with role selection
+  const [step, setStep] = useState(1); // Start with role selection
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneOtp, setPhoneOtp] = useState(["", "", "", "", "", ""]);
   const [email, setEmail] = useState("");
@@ -43,7 +43,7 @@ export default function ProfileVerificationFlow() {
       return false;
     } catch (err) {
       console.error("Error checking verification status:", err);
-      setError("Failed to check verification status. Please try again.");
+      // setError("Failed to check verification status. Please try again.");
       return false;
     } finally {
       setLoading(false);
@@ -457,7 +457,7 @@ export default function ProfileVerificationFlow() {
               )}
 
               {/* Phone verification - Step 1 */}
-              {/* {step === 1 && (
+              {step === 1 && (
                 <>
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">Verify your phone number</h2>
                   <p className="text-gray-600 mb-6">
@@ -501,10 +501,10 @@ export default function ProfileVerificationFlow() {
                     </button>
                   </div>
                 </>
-              )} */}
+              )}
 
               {/* Phone OTP verification - Step 2 */}
-              {/* {step === 2 && (
+              {step === 2 && (
                 <>
                   <h2 className="text-2xl font-bold text-gray-800 mb-6">Enter phone verification code</h2>
                   <p className="text-gray-600 mb-6">
@@ -561,7 +561,7 @@ export default function ProfileVerificationFlow() {
                     </button>
                   </div>
                 </>
-              )} */}
+              )}
 
               {/* Email submission - Step 3 */}
               {step === 3 && (

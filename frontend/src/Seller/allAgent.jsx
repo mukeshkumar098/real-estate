@@ -19,32 +19,37 @@ export default function AgentCarousel() {
         const response = await fetch(`${import.meta.env.VITE_BACK_END_URL}/user/getverifiedSellers`);
 
         if (!response.ok) {
-          throw new Error('Failed to fetch agents');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        const normalizedAgents = Array.isArray(data) ? data.map(agent => ({
-          id: agent._id || agent.id || Math.random().toString(36).substr(2, 9),
-          name: agent.name || 'Unknown Agent',
-          title: agent.title || 'Real Estate Agent',
-          image: agent.image || agent.profilePicture || '/default-profile.jpg',
-          rating: agent.rating || agent.averageRating || 0,
-          location: agent.location || agent.address || 'Location not specified',
-          properties: agent.properties || agent.propertiesSold || 0,
-          specialization: agent.specialization || 'General',
-          isVerified: agent.isVerified || false,
-          phone: agent.phone || agent.contactNumber || '',
-          email: agent.email || '',
-          bio: agent.bio || agent.about || 'No biography provided.',
-          languages: agent.languages || ['English'],
-          agency: agent.agency || '',
-          experience: agent.experience || agent.yearsOfExperience || 0,
-          successRate: agent.successRate || 0
-        })) : [];
         
-        setAgents(normalizedAgents);
+        if (!Array.isArray(data)) {
+          throw new Error('Expected array of agents but received different data type');
+        }
+
+        const normalizedAgents = data.map(agent => ({
+          id: agent._id,
+          name: agent.name || 'Unknown Agent',
+          title: agent.role === 'seller' ? 'Real Estate Agent' : agent.role?.charAt(0).toUpperCase() + agent.role?.slice(1) || 'Agent',
+          image: agent.profilePicture || '/default-profile.jpg',
+          rating: parseFloat(agent.averageRating) || 0,
+          location: agent.address || 'Location not specified',
+          properties: parseInt(agent.propertiesSold) || 0,
+          specialization: agent.specialization || 'General',
+          isVerified: Boolean(agent.isVerified),
+          phone: agent.phoneNumber || '',
+          email: agent.email || '',
+          bio: agent.bio || 'No biography provided.',
+          languages: Array.isArray(agent.languages) ? agent.languages : ['English'],
+          experience: parseInt(agent.yearsOfExperience) || 0,
+          role: agent.role || 'seller'
+        }));
+        
+        setAgents(normalizedAgents.filter(agent => agent.role === 'seller'));
       } catch (err) {
         setError(err.message);
+        console.error('Error fetching agents:', err);
       } finally {
         setLoading(false);
       }
@@ -56,7 +61,7 @@ export default function AgentCarousel() {
   useEffect(() => {
     let intervalId;
 
-    if (autoSlide && agents.length > 0) {
+    if (autoSlide && agents.length > 1) {
       intervalId = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % agents.length);
       }, 5000);
@@ -83,7 +88,8 @@ export default function AgentCarousel() {
   const closeAgentProfile = () => setSelectedAgent(null);
 
   const getVisibleAgents = () => {
-    if (!agents.length) return [];
+    if (agents.length <= 1) return [{ agent: agents[0], position: 0 }];
+    
     const visibleAgents = [];
     for (let i = -1; i <= 1; i++) {
       const index = (currentIndex + i + agents.length) % agents.length;
@@ -95,31 +101,49 @@ export default function AgentCarousel() {
   const formatPhoneNumber = (phone) => {
     if (!phone) return 'N/A';
     const cleaned = phone.replace(/\D/g, '');
-    return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    return match ? `(${match[1]}) ${match[2]}-${match[3]}` : cleaned;
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-xl font-semibold">Loading agents...</div>
+        <div className="animate-pulse flex space-x-4">
+          <div className="flex-1 space-y-6 py-1">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="h-4 bg-gray-200 rounded col-span-2"></div>
+                <div className="h-4 bg-gray-200 rounded col-span-1"></div>
+              </div>
+              <div className="h-4 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (error && agents.length === 0) {
+  if (error) {
     return (
-      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+      <div className="bg-red-50 p-4 rounded-lg border border-red-200 max-w-2xl mx-auto">
         <h3 className="text-lg font-medium text-red-800">Error loading agents</h3>
         <p className="mt-2 text-red-700">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
-  if (agents.length === 0 && !loading && !error) {
+  if (agents.length === 0 && !loading) {
     return (
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-2xl mx-auto">
         <h3 className="text-lg font-medium text-blue-800">No agents available</h3>
-        <p className="mt-2 text-blue-700">There are currently no agents to display.</p>
+        <p className="mt-2 text-blue-700">There are currently no verified agents to display.</p>
       </div>
     );
   }
@@ -135,6 +159,7 @@ export default function AgentCarousel() {
               alt="Our Professional Team"
               className="w-full h-full object-cover"
               onError={(e) => {
+                e.target.onerror = null;
                 e.target.src = '/default-team.jpg';
                 e.target.className = "w-full h-full object-contain bg-gray-100 p-4";
               }}
@@ -157,7 +182,7 @@ export default function AgentCarousel() {
                 <span className="text-gray-700">500+ satisfied clients</span>
               </li>
               <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shibut-0" />
                 <span className="text-gray-700">Local market experts</span>
               </li>
               <li className="flex items-start">
@@ -174,7 +199,11 @@ export default function AgentCarousel() {
 
           <div className="relative overflow-hidden">
             <div className="flex justify-between items-center mb-8">
-              <button onClick={prevSlide} className="bg-white p-3 rounded-full shadow hover:bg-gray-100 transition">
+              <button 
+                onClick={prevSlide} 
+                className="bg-white p-3 rounded-full shadow hover:bg-gray-100 transition disabled:opacity-50"
+                disabled={agents.length <= 1}
+              >
                 <ChevronLeft size={24} />
               </button>
 
@@ -195,10 +224,12 @@ export default function AgentCarousel() {
                       <div className="bg-white h-full flex flex-col">
                         <div className="h-48 bg-gray-200 relative overflow-hidden">
                           <img
-                            src={agent.image}
+                    
+                             src={`${import.meta.env.VITE_BACK_END_URL}${agent.image}`}
                             alt={agent.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
+                              e.target.onerror = null;
                               e.target.src = '/default-profile.jpg';
                               e.target.className = "w-full h-full object-contain bg-gray-100 p-4";
                             }}
@@ -236,19 +267,9 @@ export default function AgentCarousel() {
                             </div>
                           </div>
 
-                          {agent.agency && (
-                            <div className="mt-3 text-sm text-gray-600">
-                              <span className="font-medium">Agency:</span> {agent.agency}
-                            </div>
-                          )}
                           {agent.experience > 0 && (
                             <div className="mt-3 text-sm text-gray-600">
                               <span className="font-medium">Experience:</span> {agent.experience} years
-                            </div>
-                          )}
-                          {agent.successRate > 0 && (
-                            <div className="mt-3 text-sm text-gray-600">
-                              <span className="font-medium">Success Rate:</span> {agent.successRate}%
                             </div>
                           )}
                         </div>
@@ -258,22 +279,29 @@ export default function AgentCarousel() {
                 </div>
               </div>
 
-              <button onClick={nextSlide} className="bg-white p-3 rounded-full shadow hover:bg-gray-100 transition">
+              <button 
+                onClick={nextSlide} 
+                className="bg-white p-3 rounded-full shadow hover:bg-gray-100 transition disabled:opacity-50"
+                disabled={agents.length <= 1}
+              >
                 <ChevronRight size={24} />
               </button>
             </div>
 
-            <div className="flex justify-center mt-4">
-              {agents.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 mx-1 rounded-full transition-all ${
-                    index === currentIndex ? 'bg-blue-600 w-6' : 'bg-gray-300'
-                  }`}
-                  onClick={() => setCurrentIndex(index)}
-                />
-              ))}
-            </div>
+            {agents.length > 1 && (
+              <div className="flex justify-center mt-4">
+                {agents.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 mx-1 rounded-full transition-all ${
+                      index === currentIndex ? 'bg-blue-600 w-6' : 'bg-gray-300'
+                    }`}
+                    onClick={() => setCurrentIndex(index)}
+                    aria-label={`Go to agent ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -284,6 +312,7 @@ export default function AgentCarousel() {
             <button 
               onClick={closeAgentProfile} 
               className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-10"
+              aria-label="Close agent profile"
             >
               <X size={24} className="text-gray-700" />
             </button>
@@ -293,10 +322,12 @@ export default function AgentCarousel() {
               <div className="absolute -bottom-16 left-8">
                 <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white">
                   <img
-                    src={selectedAgent.image}
+                     src={`${import.meta.env.VITE_BACK_END_URL}${selectedAgent.image}`}
+                    // src={selectedAgent.image}
                     alt={selectedAgent.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
+                      e.target.onerror = null;
                       e.target.src = '/default-profile.jpg';
                       e.target.className = "w-full h-full object-contain p-2";
                     }}
@@ -371,6 +402,15 @@ export default function AgentCarousel() {
                   </div>
                 </div>
               </div>
+
+              {selectedAgent.experience > 0 && (
+                <div className="mt-4">
+                  <h3 className="font-medium text-lg text-gray-800 mb-2">Experience</h3>
+                  <p className="text-gray-600">
+                    {selectedAgent.experience} {selectedAgent.experience === 1 ? 'year' : 'years'} in real estate
+                  </p>
+                </div>
+              )}
 
               <div className="mt-8 flex justify-center">
                 <button className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition">
