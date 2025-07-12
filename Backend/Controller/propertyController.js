@@ -2,7 +2,7 @@
 import { userModel } from "../Models/userModel.js";
 import { propertyModel } from "../Schemas/propertiesSchema.js";
 // import { propertyModel } from "../Schemas/propertiesSchema.js";
-import twilio from 'twilio';
+import twilio from "twilio"
 import dotenv from 'dotenv';
 import axios from "axios";
 import transporter from "../Utils/sendMail.js";
@@ -354,124 +354,110 @@ function generateOTP() {
 }
 
 // Controller: Send OTP via MSG91
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
 export const sendNumberOtpSMS = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
-   console.log(phoneNumber,"kjsdhfusifb")
     if (!phoneNumber) {
-      return res.status(400).json({
-        success: false,
-        error: 'Phone number is required'
-      });
+      return res.status(400).json({ success: false, error: 'Phone number is required' });
     }
 
-    const cleanedNumber = phoneNumber.replace(/\D/g, ''); // digits only
-    const formattedPhoneNumber = `91${cleanedNumber}`; // MSG91 needs country code without '+'
-
+    const cleanedNumber = phoneNumber.replace(/\D/g, '');
+    const formattedPhoneNumber = `+91${cleanedNumber}`;
     const otp = generateOTP();
 
-    // Save OTP & expiry in DB
-    const dbPhone = `+91${cleanedNumber}`;
-    let user = await userModel.findOne({ phoneNumber: dbPhone });
+    let user = await userModel.findOne({ phoneNumber: formattedPhoneNumber });
 
     if (!user) {
-      user = new userModel({ phoneNumber: dbPhone });
+      // Only set phoneNumber. Don't insert email unless provided.
+      user = new userModel({ phoneNumber: formattedPhoneNumber });
     }
 
     user.otp = otp;
-    user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+    user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
     await user.save();
 
-    console.log(formattedPhoneNumber,"bhfb")
+    // Simulate for +91 numbers
+    if (formattedPhoneNumber.startsWith('+91')) {
+      console.log(`Simulated OTP for ${formattedPhoneNumber}: ${otp}`);
+      return res.status(200).json({
+        success: true,
+        message: 'OTP simulated (India restriction)',
+        otp
+      });
+    }
 
-    // Send OTP via MSG91
- const msg91Response = await axios.get('https://control.msg91.com/api/v5/otp', {
-  params: {
-    authkey: process.env.MSG91_AUTH_KEY,
-    mobile: formattedPhoneNumber,           // Example: 919876543210
-    sender: process.env.MSG91_SENDER_ID,    // Example: 'ABCDEF'
-    otp: otp,                                // Your generated OTP
-    template_id: process.env.MSG91_TEMPLATE_ID
-  }
-});
+    const message = await client.messages.create({
+      body: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: formattedPhoneNumber,
+    });
 
     return res.status(200).json({
       success: true,
-      message: 'OTP sent successfully',
-      otpLength: otp.length,
-      expiresIn: '5 minutes',
-      data: msg91Response.data
+      message: 'OTP sent successfully via Twilio SMS',
+      sid: message.sid,
     });
 
   } catch (error) {
-    console.error('MSG91 OTP error:', error?.response?.data || error.message);
-
+    console.error('Twilio SMS OTP error:', error.message);
     return res.status(500).json({
       success: false,
-      error: 'Failed to send OTP',
-      details: error?.response?.data || error.message
+      error: 'Failed to send OTP via SMS',
+      details: error.message,
     });
   }
 };
 
 
+
+// Verify OTP
 export const verifyNumberOtpSMS = async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
+    const formattedPhoneNumber = `+91${phoneNumber.replace(/\D/g, '')}`;
 
-    if (!phoneNumber || !otp) {
-      return res.status(400).json({
-        success: false,
-        error: 'Phone number and OTP are required'
-      });
-    }
-
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
-    const dbPhone = `+91${cleanedNumber}`;
-
-    const user = await userModel.findOne({ phoneNumber: dbPhone });
+    const user = await userModel.findOne({ phoneNumber: formattedPhoneNumber });
 
     if (!user || !user.otp || !user.otpExpiresAt) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        error: 'OTP not found. Please request a new one.'
+        message: 'No OTP found or OTP not requested',
       });
     }
 
-    // Check if OTP is expired
-    if (user.otpExpiresAt < Date.now()) {
+    const isExpired = new Date() > user.otpExpiresAt;
+    if (isExpired) {
       return res.status(400).json({
         success: false,
-        error: 'OTP has expired. Please request a new one.'
+        message: 'OTP has expired',
       });
     }
 
-    // Check if OTP matches
     if (user.otp !== otp) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid OTP'
+        message: 'Invalid OTP',
       });
     }
 
-    // OTP verified successfully
+    // Optional: mark phone verified, clear OTP
     user.otp = null;
     user.otpExpiresAt = null;
-    user.isVerified = true;
+    user.isPhoneVerified = true;
     await user.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Phone number verified successfully',
-      userId: user._id
+      message: 'OTP verified successfully',
     });
-
   } catch (error) {
-    console.error('OTP verification error:', error);
+    console.error('OTP Verification error:', error.message);
     return res.status(500).json({
       success: false,
       error: 'OTP verification failed',
-      details: error.message
+      details: error.message,
     });
   }
 };
